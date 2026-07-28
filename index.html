@@ -6,6 +6,24 @@
 <title>Save the Date — Jiwon &amp; Jeonghun</title>
 <meta name="theme-color" content="#F7F3EA">
 
+<!-- ── 카카오톡 / SNS 링크 미리보기 ────────────────────────────
+     og:image 는 반드시 https 로 시작하는 절대 주소여야 한다 (상대경로는 무시된다).
+     이미지 원본은 og-card.html : 내용을 고치면 그 파일의 주석에 적힌 명령으로 다시 캡처한다.
+     ※ 카카오톡은 미리보기를 캐시하므로, 바꾼 뒤에는
+       https://developers.kakao.com/tool/debugger/sharing 에서 캐시를 지워야 반영된다. -->
+<meta property="og:type"        content="website">
+<meta property="og:site_name"   content="황지원 · 최정훈 결혼합니다">
+<meta property="og:title"       content="황지원 · 최정훈 결혼합니다">
+<meta property="og:description" content="2026년 11월 14일 토요일 오후 1시 50분 · 상주 마리앙스 웨딩컨벤션">
+<meta property="og:url"         content="https://vargattasku.github.io/thisiswd/">
+<meta property="og:image"       content="https://vargattasku.github.io/thisiswd/image/og-card.png">
+<meta property="og:image:width"  content="2400">
+<meta property="og:image:height" content="1260">
+<meta property="og:image:alt"   content="jiwon &amp; jeonghun · 2026.11.14">
+<meta property="og:locale"      content="ko_KR">
+<meta name="twitter:card"       content="summary_large_image">
+<meta name="description"        content="2026년 11월 14일 토요일 오후 1시 50분, 상주 마리앙스 웨딩컨벤션에서 황지원 · 최정훈이 결혼합니다.">
+
 <!-- ============================================================
      [ 수정 가이드 ]
      1) 이름 / 날짜 / 장소 / 연락처  : 본문 HTML에서 직접 수정
@@ -352,7 +370,7 @@ body{
   text-indent:.16em;   /* letter-spacing 때문에 오른쪽으로 밀리는 만큼 보정 */
   line-height:1.4;
 }
-.intro-names .amp{ opacity:.4; margin:0 3px; font-weight:300; }
+.intro-names .amp{ opacity:.4; margin:0 3px; letter-spacing: -1px; font-weight:300; }
 .intro-rule{
   display:block;
   width:26px; height:1px;
@@ -364,7 +382,7 @@ body{
   font-weight:400;
   letter-spacing:.05em;
   line-height:1.85;
-  opacity:.88;
+  opacity:.6;
 }
 .intro-date .dot{ opacity:.35; margin:0 5px; }
 .intro-place{
@@ -372,7 +390,6 @@ body{
   font-size:clamp(10.5px,3vw,12px);
   font-weight:400;
   letter-spacing:.03em;
-  line-height:1.75;
   opacity:.6;
 }
 .intro-place .hall{ display:block; font-size:.92em; opacity:.85; font-weight: 400; }

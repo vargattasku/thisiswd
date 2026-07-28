@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>og-card</title>
+<!-- ============================================================
+     카카오톡·SNS 미리보기용 1200x630 카드 원본.
+     내용을 고친 뒤 아래 명령으로 image/og-card.png 를 다시 만든다.
+
+     "C:\Program Files\Google\Chrome\Application\chrome.exe" ^
+       --headless=new --disable-gpu --hide-scrollbars ^
+       --force-device-scale-factor=2 --window-size=1200,630 ^
+       --screenshot="image\og-card.png" og-card.html
+
+     ※ 카카오톡은 한 번 읽은 미리보기를 캐시한다. 이미지를 바꾼 뒤에는
+       https://developers.kakao.com/tool/debugger/sharing 에서 캐시를 지워야 반영된다.
+     ============================================================ -->
+<style>
+@font-face{ font-family:'Brittany Signature'; src:url('./font/BrittanySignature.ttf') format('truetype'); }
+@font-face{ font-family:'Festigan';           src:url('./font/Festigan.otf')          format('opentype'); }
+@font-face{ font-family:'Jost';               src:url('./font/Jost-Light.ttf')        format('truetype'); }
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+body{
+  width:1200px; height:630px;
+  overflow:hidden;
+  color:#2030d0;
+  background:#F7F3EA;
+  background-image:
+    radial-gradient(120% 70% at 50% 0%,   rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 62%),
+    radial-gradient(100% 55% at 50% 100%, rgba(0,0,0,.03) 0%, rgba(0,0,0,0) 62%);
+  font-family:'Jost','Malgun Gothic',sans-serif;
+  font-weight:300;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+
+/* 코너 리본 : 청첩장 본문과 같은 도형 */
+.mark{ position:absolute; width:96px; height:96px; color:#2030d0; }
+.mark svg{ width:100%; height:100%; display:block; overflow:visible; }
+.mark.tl{ top:34px;    left:38px; }
+.mark.tr{ top:34px;    right:38px;  transform:scaleX(-1); }
+.mark.bl{ bottom:34px; left:38px;   transform:scaleY(-1); }
+.mark.br{ bottom:34px; right:38px;  transform:scale(-1,-1); }
+
+.line{
+  font-family:'Festigan',cursive;
+  font-size:38px;
+  font-weight:200;
+  letter-spacing:-1px;
+  margin-bottom:-26px;
+}
+
+/* 이름 아치 : 본문 1페이지와 같은 곡선(M14 106 Q200 -10 386 106) */
+.arc{ width:660px; height:auto; overflow:visible; display:block; }
+.arc text{ fill:currentColor; font-family:'Brittany Signature',cursive; font-size:47px; letter-spacing:5px; }
+
+.rule{ width:44px; height:1px; background:rgba(45,60,205,.28); margin:34px 0 30px; }
+
+.date{
+  font-size:22px;
+  letter-spacing:.26em;
+  text-indent:.26em;
+  font-weight:300;
+}
+.place{
+  margin-top:20px;
+  font-family:'Malgun Gothic','Noto Sans KR',sans-serif;
+  font-size:19px;
+  font-weight:400;
+  letter-spacing:.06em;
+  opacity:.62;
+}
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute">
+  <defs>
+    <g id="ribbon-corner" fill="none" stroke="currentColor" stroke-width="1.35"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 22 C16.8 13.6 15.6 4.2 20.6 3 C26.2 1.8 26.8 11.4 22 22"/>
+      <path d="M22 22 C13.6 27.2 4.2 28.2 3 23.2 C1.8 17.8 11.4 17.2 22 22"/>
+      <path d="M22 22 C31 18.6 37 24 46 20.6 C55 17.2 61 22 71 18.2"/>
+      <path d="M22 22 C26 30 19 36 21 44.6 C23 53.2 16 58 18.6 71"/>
+    </g>
+  </defs>
+</svg>
+
+<span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+<span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+<span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+<span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+<p class="line">Here begins forever</p>
+
+<svg class="arc" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
+  <defs><path id="arcOg" d="M14 106 Q200 -10 386 106" fill="none"/></defs>
+  <text text-anchor="middle"><textPath href="#arcOg" startOffset="52%">jiwon<tspan dx="-2.5">&amp;</tspan><tspan dx="-2.5">jeonghun</tspan></textPath></text>
+</svg>
+
+<span class="rule"></span>
+
+<p class="date">2026. 11. 14 SAT &nbsp;·&nbsp; PM 1:50</p>
+<p class="place">상주 마리앙스 웨딩컨벤션</p>
+
+</body>
+</html>
