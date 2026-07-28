@@ -1,1 +1,1084 @@
-<h1>HI</h1>
+<!DOCTYPE html>
+<html lang="ko" class="no-js">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Save the Date — Jiwon &amp; Jeonghoon</title>
+<meta name="theme-color" content="#F7F3EA">
+
+<!-- ============================================================
+     [ 수정 가이드 ]
+     1) 이름 / 날짜 / 장소 / 연락처  : 본문 HTML에서 직접 수정
+     2) 사진                        : 같은 폴더에 photo.jpg 저장 (없으면 자동 플레이스홀더)
+     3) 색상 / 폰트 크기            : 아래 :root 변수에서 조절
+     4) 계좌(마음 전하실 곳)        : 1페이지 .gift-panel 안 계좌번호 수정
+     ============================================================ -->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Parisienne&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+KR:wght@200;300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* 로컬 폰트 : font 폴더 */
+@font-face{
+  font-family:'Brittany Signature';
+  src:url('./font/BrittanySignature.ttf') format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Mrs Saint Delafield';
+  src:url('./font/MrsSaintDelafield-Regular.ttf') format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Northwell';
+  src:url('./font/Northwell.ttf') format('truetype');
+  font-weight:300;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'silk';
+  src:url('./font/Silk Script Regular.ttf') format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Festigan';
+  src:url('./font/Festigan.otf') format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+@font-face{
+  font-family:'Sergia';
+  src:url('./font/Sergia.otf') format('truetype');
+  font-weight:400;
+  font-style:normal;
+  font-display:swap;
+}
+
+:root{
+  --ivory:      #F7F3EA;   /* 배경 아이보리 */
+  --ivory-deep: #F1ECE0;
+  --ink:        #2030d0;   /* 메인 블루 잉크 */
+  --ink-soft:   rgba(45,60,205,.45);
+  --ink-faint:  rgba(45,60,205,.18);
+
+  /* 영문은 Jost, Jost에 없는 한글은 자동으로 Noto Sans KR 로 떨어진다 */
+  --sans:   'Jost', 'Noto Sans KR', 'Helvetica Neue', -apple-system, sans-serif;
+  --kr:     'Noto Sans KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
+  --script: 'Parisienne', 'Apple Chancery', cursive;
+  --serif:  'Cormorant Garamond', Georgia, serif;
+  --Northwell:  'Northwell', 'Parisienne', 'Apple Chancery', cursive;    /* 로컬 필기체 */
+  --brittany:  'Brittany Signature', 'Parisienne', 'Apple Chancery', cursive;    /* 로컬 필기체 */
+  --delafield: 'Mrs Saint Delafield', 'Parisienne', 'Apple Chancery', cursive;   /* 로컬 필기체 */
+  --silk: 'silk', 'Parisienne', 'Apple Chancery', cursive;
+  --Festigan: 'Festigan', 'Parisienne', 'Apple Chancery', cursive;
+  --Sergia: 'Sergia', 'Parisienne', 'Apple Chancery', cursive;
+
+  --page-w: 430px;   /* 모바일 카드 최대 폭 */
+}
+
+*,*::before,*::after{ box-sizing:border-box; margin:0; padding:0; }
+
+html{ -webkit-text-size-adjust:100%; scroll-behavior:smooth; }
+
+body{
+  background:#E7E2D8;
+  color:var(--ink);
+  font-family:var(--sans);
+  font-weight:300;
+  display:flex;
+  justify-content:center;
+  min-height:100dvh;
+}
+
+/* ── 모바일 카드 컨테이너 ───────────────────────────── */
+.page{
+  width:100%;
+  max-width:var(--page-w);
+  background:var(--ivory);
+  background-image:
+    radial-gradient(120% 60% at 50% 0%,  rgba(255,255,255,.65) 0%, rgba(255,255,255,0) 60%),
+    radial-gradient(100% 50% at 50% 100%, rgba(0,0,0,.025) 0%, rgba(0,0,0,0) 60%);
+  box-shadow:0 0 60px rgba(0,0,0,.10);
+  overflow-x:hidden;
+}
+
+/* ── 공통 섹션 ─────────────────────────────────────── */
+.card{
+  position:relative;
+  min-height:100dvh;
+  padding:clamp(38px,9vw,54px) clamp(24px,7vw,34px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+.card--main{ justify-content:flex-start; padding-top:clamp(52px,13vw,74px); }
+.card--gift{ justify-content:center; gap:0; }
+.card + .card{ border-top:1px solid var(--ink-faint); }   /* 두 번째 카드부터 구분선 */
+
+/* 코너 리본 매듭 (ref.png 참고 : 매듭에서 두 방향으로 끈이 뻗는 형태) */
+.mark{
+  position:absolute;
+  width:clamp(46px,14vw,62px);
+  height:clamp(46px,14vw,62px);
+  color:var(--ink);
+  pointer-events:none;
+}
+.mark svg{ width:100%; height:100%; display:block; overflow:visible; }
+/* 끈이 사진 아래까지 흘러내리는 버전 : 높이는 viewBox 비율대로 자동 */
+.mark.long{ height:auto; }
+.mark.long svg{ height:auto; }
+.mark.tl{ top:14px;    left:14px;  }
+.mark.tr{ top:14px;    right:14px;  transform:scaleX(-1); }
+.mark.bl{ bottom:14px; left:14px;   transform:scaleY(-1); }
+.mark.br{ bottom:14px; right:14px;  transform:scale(-1,-1); }
+
+/* ── 1) SAVE the DATE 타이틀 ──────────────────────── */
+.title{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:200;
+  font-size:clamp(25px,7.4vw,32px);
+  letter-spacing:.10em;
+  line-height:1;
+  white-space:nowrap;
+}
+.title .the{
+  font-family:var(--Festigan);
+  /* Mrs Saint Delafield는 소문자 몸통(x-height)이 0.22em으로 매우 작아서
+     SAVE / DATE 대문자(0.70em)와 눈높이를 맞추려면 크게 키워야 한다 */
+  font-size:1.55em;
+  font-weight: 100 !important;
+  letter-spacing:0;
+  margin: 7px -5px 0 0px;
+  display:inline-block;
+}
+
+/* ── 2) 날짜 라인 ─────────────────────────────────── */
+.dateline{
+  margin-top:clamp(20px,5.5vw,26px);
+  display:flex;
+  align-items:center;
+  gap:clamp(13px,4vw,18px);
+  letter-spacing:.24em;
+  font-weight:300;
+}
+.dateline .rule{ width:1px; height:23px; background:var(--ink-soft); }
+.dateline .day{
+  font-family:var(--sans);
+  font-size: 18px;
+  font-weight:500;
+  letter-spacing:.02em;
+  line-height:1;
+}
+
+/* ── 3) 장소 ─────────────────────────────────────── */
+.venue{
+  margin-top:clamp(24px,6.5vw,32px);
+  text-align:center;
+  font-size:clamp(8.5px,2.4vw,9.5px);
+  letter-spacing:.22em;
+  line-height:2.1;
+  color:var(--ink);
+  opacity:.9;
+}
+
+/* ── 3-1) 예식까지 남은 시간 ─────────────────────── */
+.countdown{
+  margin-top:clamp(24px,6.5vw,32px);
+  text-align:center;
+  color:var(--ink);
+}
+.countdown .cd-label{
+  font-size:8.5px;
+  letter-spacing:.30em;
+  text-indent:.30em;
+  opacity:.55;
+}
+.cd-nums{
+  margin-top:clamp(11px,3.2vw,15px);
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  gap:clamp(13px,4.2vw,19px);
+}
+.cd-unit{ display:flex; flex-direction:column; align-items:center; gap:7px; }
+.cd-unit b{
+  font-size:clamp(23px,6.8vw,28px);
+  font-weight:300;
+  line-height:1;
+  letter-spacing:.02em;
+  font-variant-numeric:tabular-nums;   /* 숫자가 바뀌어도 폭이 흔들리지 않게 */
+}
+.cd-unit span{
+  font-size:7.5px;
+  letter-spacing:.20em;
+  text-indent:.20em;
+  opacity:.5;
+}
+.cd-sep{
+  font-size:clamp(17px,5vw,21px);
+  font-weight:200;
+  line-height:1;
+  opacity:.3;
+  padding-top:4px;      /* 숫자 높이 가운데에 오도록 */
+}
+.cd-kr{
+  margin-top:clamp(12px,3.4vw,16px);
+  font-family:var(--kr);
+  font-size:10.5px;
+  font-weight:300;
+  letter-spacing:.06em;
+  opacity:.62;
+}
+/* 예식 당일이 지나면 */
+.countdown.done .cd-nums{ display:none; }
+.countdown.done .cd-kr{ font-size:12px; opacity:.8; margin-top:clamp(10px,3vw,14px); }
+
+/* ── 4) 라인아트 ─────────────────────────────────── */
+.art{ color:var(--ink); display:block; }
+.art svg{ display:block; width:100%; height:auto; overflow:visible; }
+.art--hand    { width:clamp(96px,27vw,116px);  margin-top:clamp(22px,6vw,30px); }
+.art--bouquet { width:clamp(104px,30vw,126px); margin-top:clamp(14px,4vw,20px); }
+.art--envelope{ width:clamp(132px,42vw,168px); margin-bottom:clamp(24px,7vw,32px); }
+
+/* ── 5) 타원 사진 (가로로 누운 타원) ─────────────── */
+.photo{
+  margin-top:clamp(18px,5vw,26px);
+  width:clamp(250px,80vw,290px);
+  aspect-ratio:1.5/1;
+  border-radius:50%;
+  overflow:hidden;
+  background:var(--ivory-deep);
+}
+.photo img{
+  width:100%; height:120%;
+  object-fit:cover;
+  object-position:center 80%;   /* 세로 원본에서 인물이 가운데 오도록 */
+  display:block;
+  filter:grayscale(1) contrast(1.04);
+}
+
+/* ── 6) 신랑신부 이름 ────────────────────────────── */
+.names{
+  font-family:var(--brittany);
+  font-weight:400;
+  font-size:clamp(42px,13vw,54px);
+  line-height:1.15;
+  margin-top:clamp(26px,7vw,34px);
+  text-align:center;
+  /* 이름별로 기울이므로 전체 회전은 사용하지 않음 */
+  margin-bottom: 20px;
+}
+
+/* ── 7) 하단 문의 ───────────────────────────────── */
+.contact{
+  margin-top:auto;
+  padding-top:clamp(28px,8vw,40px);
+  text-align:center;
+  font-size:clamp(8px,2.2vw,9px);
+  letter-spacing:.16em;
+  line-height:2.2;
+  opacity:.85;
+}
+.contact a{ color:inherit; text-decoration:none; border-bottom:1px solid var(--ink-faint); padding-bottom:1px; }
+
+/* ── 1페이지 : gift ─────────────────────────────── */
+.gift-line{
+  font-family:var(--Festigan);
+  font-size: 20px;
+  text-align:center;
+  font-weight: 200;
+  letter-spacing: -1px;
+  margin-bottom: -16px;
+}
+.gift-names{
+  font-family:var(--brittany);
+  font-weight: 600 !important;
+  font-size:clamp(34px,10vw,42px);
+  margin-top:clamp(8px,2.5vw,12px);
+  text-align:center;
+  margin-bottom: -16px;
+}
+/* 이름을 ^ 산 모양으로 : 앞 이름은 / , 뒤 이름은 \ 방향 (1·2페이지 공통) */
+/* 이름은 위로 볼록한 완만한 아치를 따라 흐른다 (ref2.png 참고)
+   곡선의 깊이는 <path d="..."> 의 가운데 제어점 Y값으로 조절 */
+.arc{
+  display:block;
+  width:100%;
+  max-width:345px;
+  height:auto;
+  overflow:visible;
+}
+.arc text{ fill:currentColor; }
+.gift-names.arc text{ font-size:47px; }   /* viewBox(400) 기준 단위 */
+.names.arc text    { font-size:35px; }
+.gift-btn{
+  margin-top:clamp(26px,7vw,34px);
+  font-family:var(--script);
+  font-size:clamp(17px,5vw,20px);
+  color:var(--ink);
+  background:none;
+  border:0;
+  border-bottom:1px solid var(--ink-soft);
+  padding:0 6px 3px;
+  cursor:pointer;
+  transition:opacity .25s;
+}
+.gift-btn:hover{ opacity:.6; }
+
+.gift-panel{
+  width:100%;
+  max-width:300px;
+  margin-top:22px;
+  display:grid;
+  grid-template-rows:0fr;
+  transition:grid-template-rows .45s ease, opacity .35s ease;
+  opacity:0;
+}
+.gift-panel.open{ grid-template-rows:1fr; opacity:1; }
+.gift-panel > div{ overflow:hidden; }
+.acct{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:13px 2px;
+  border-bottom:1px solid var(--ink-faint);
+  font-size:10.5px;
+  letter-spacing:.1em;
+}
+.acct:first-child{ border-top:1px solid var(--ink-faint); }
+.acct .who{ opacity:.6; font-size:9px; letter-spacing:.2em; }
+.acct .no{ font-weight:400; }
+.copy{
+  font-size:8.5px; letter-spacing:.18em;
+  color:var(--ink); background:none;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:5px 10px; cursor:pointer;
+  white-space:nowrap;
+  transition:background .2s;
+}
+.copy:hover{ background:rgba(45,60,205,.06); }
+.copy.done{ background:var(--ink); color:var(--ivory); border-color:var(--ink); }
+
+/* ── 스크롤 등장 애니메이션 ─────────────────────── */
+.js .reveal{
+  opacity:0;
+  transform:translateY(22px);
+  transition:opacity .9s cubic-bezier(.22,.61,.36,1), transform .9s cubic-bezier(.22,.61,.36,1);
+}
+.js .reveal.in{ opacity:1; transform:none; }
+.js .reveal.d1{ transition-delay:.10s } .js .reveal.d2{ transition-delay:.20s }
+.js .reveal.d3{ transition-delay:.30s } .js .reveal.d4{ transition-delay:.40s }
+.js .reveal.d5{ transition-delay:.50s }
+
+/* 글자는 왼쪽에서 오른쪽으로 훑듯이 빠르게 나타남
+   (그라디언트 마스크를 오른쪽 밖에서 제자리로 밀어 넣는 방식.
+    세로를 400%로 잡은 건 기울인 이름처럼 줄 밖으로 나가는 글자가 잘리지 않게 하기 위함) */
+.js .wipe{
+  -webkit-mask-image:linear-gradient(90deg,#000 45%,rgba(0,0,0,0) 72%);
+          mask-image:linear-gradient(90deg,#000 45%,rgba(0,0,0,0) 72%);
+  -webkit-mask-size:240% 400%;   mask-size:240% 400%;
+  -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
+  -webkit-mask-position:100% 50%; mask-position:100% 50%;
+  transition:-webkit-mask-position .55s cubic-bezier(.25,.6,.3,1),
+                      mask-position .55s cubic-bezier(.25,.6,.3,1);
+}
+.js .wipe.in{ -webkit-mask-position:0 50%; mask-position:0 50%; }
+.js .wipe.d1{ transition-delay:.10s } .js .wipe.d2{ transition-delay:.20s }
+.js .wipe.d3{ transition-delay:.30s } .js .wipe.d4{ transition-delay:.40s }
+.js .wipe.d5{ transition-delay:.50s }
+
+/* 라인아트는 선이 그려지듯 (길이는 JS에서 도형별로 계산) */
+.js .draw path, .js .draw ellipse, .js .draw circle{
+  transition:stroke-dashoffset 1.8s cubic-bezier(.4,0,.2,1);
+}
+.js .draw.in path, .js .draw.in ellipse, .js .draw.in circle{ stroke-dashoffset:0 !important; }
+
+@media (prefers-reduced-motion: reduce){
+  .js .reveal, .js .draw path, .js .draw ellipse, .js .draw circle{
+    opacity:1; transform:none; transition:none; stroke-dashoffset:0;
+  }
+  .js .wipe{
+    -webkit-mask-position:0 50%; mask-position:0 50%; transition:none;
+  }
+  html{ scroll-behavior:auto; }
+}
+
+.letter-icon {
+    display: block;
+    height: 170px;      /* 450x300 → 3:2 비율 */
+    margin-bottom: clamp(14px,4vw,20px);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   3페이지 : 달력 + 오시는 길        4페이지 : 갤러리 + 연락처
+   한글은 Noto Sans, 영문 제목은 기존 필기체를 그대로 쓴다
+   ═══════════════════════════════════════════════════════════ */
+.card--info,
+.card--gallery{ justify-content:flex-start; padding-top:clamp(58px,15vw,84px); }
+
+/* 섹션 소제목 : 필기체 + 그 아래 얇은 라벨 */
+.sec-title{
+  font-family:var(--Festigan);
+  font-size:clamp(30px,9vw,38px);
+  line-height:1.1;
+  text-align:center;
+}
+.sec-label{
+  margin-top:10px;
+  font-size:8.5px;
+  letter-spacing:.34em;
+  text-indent:.34em;
+  opacity:.55;
+  text-align:center;
+}
+.sec-rule{
+  width:34px; height:1px; background:var(--ink-faint);
+  margin:clamp(18px,5vw,24px) 0;
+}
+
+/* ── 달력 ────────────────────────────────────────── */
+.cal{ width:100%; max-width:320px; }
+.cal-month{
+  text-align:center;
+  font-size:11px;
+  letter-spacing:.30em;
+  text-indent:.30em;
+  font-weight:400;
+  margin-bottom:clamp(14px,4vw,18px);
+}
+.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  row-gap:clamp(7px,2.2vw,10px);
+  text-align:center;
+}
+.cal-grid .dow{
+  font-size:8.5px;
+  letter-spacing:.14em;
+  opacity:.5;
+  padding-bottom:clamp(8px,2.4vw,11px);
+  border-bottom:1px solid var(--ink-faint);
+  margin-bottom:clamp(8px,2.4vw,11px);
+}
+.cal-grid .d{
+  font-size:12.5px;
+  font-weight:300;
+  line-height:26px;
+  height:26px;
+}
+.cal-grid .d.sun{ opacity:.55; }
+/* 결혼식 당일 : 잉크색 원 안에 흰 숫자 */
+.cal-grid .d.on{
+  width:26px;
+  margin:0 auto;
+  color:var(--ivory);
+  font-weight:400;
+  background:var(--ink);
+  border-radius:50%;
+}
+.cal-note{
+  margin-top:clamp(16px,4.5vw,22px);
+  text-align:center;
+  font-family:var(--kr);
+  font-size:11px;
+  font-weight:300;
+  letter-spacing:.02em;
+  line-height:1.9;
+}
+.cal-note strong{ font-weight:400; }
+
+/* ── 지도 ────────────────────────────────────────── */
+.map{
+  width:100%;
+  max-width:340px;
+  aspect-ratio:1.28/1;
+  border:1px solid var(--ink-faint);
+  overflow:hidden;
+  background:var(--ivory-deep);
+}
+.map iframe{ width:100%; height:100%; border:0; display:block; filter:grayscale(.35) contrast(.96); }
+.place{
+  margin-top:clamp(14px,4vw,18px);
+  text-align:center;
+  font-family:var(--kr);
+  font-size:13px;
+  font-weight:400;
+  letter-spacing:.01em;
+}
+.place .addr{
+  display:block;
+  margin-top:7px;
+  font-size:11px;
+  font-weight:300;
+  opacity:.7;
+  line-height:1.7;
+}
+.map-links{
+  margin-top:clamp(14px,4vw,18px);
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  justify-content:center;
+}
+.map-links a{
+  font-family:var(--kr);
+  font-size:10.5px;
+  font-weight:300;
+  letter-spacing:.02em;
+  color:var(--ink);
+  text-decoration:none;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:7px 14px;
+  transition:background .2s;
+}
+.map-links a:hover{ background:rgba(45,60,205,.06); }
+
+/* ── 갤러리 ──────────────────────────────────────── */
+.gallery{
+  width:100%;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+}
+.gallery button{
+  padding:0; border:0; background:var(--ivory-deep);
+  aspect-ratio:1/1.18;
+  overflow:hidden;
+  cursor:pointer;
+  display:block;
+}
+.gallery img{
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
+  filter:grayscale(1) contrast(1.03);
+  transition:opacity .3s;
+}
+.gallery button:hover img{ opacity:.78; }
+
+/* 사진 확대 보기 */
+.lightbox{
+  position:fixed; inset:0;
+  background:rgba(28,26,22,.92);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  z-index:50;
+  padding:24px;
+}
+.lightbox.open{ display:flex; }
+.lightbox img{ max-width:100%; max-height:86vh; object-fit:contain; }
+.lightbox .lb-close{
+  position:absolute; top:16px; right:18px;
+  background:none; border:0; cursor:pointer;
+  color:var(--ivory);
+  font-size:11px; letter-spacing:.2em;
+}
+.lightbox .lb-nav{
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:none; border:0; cursor:pointer;
+  color:var(--ivory); opacity:.75;
+  font-size:26px; font-weight:200;
+  padding:12px 16px;
+}
+.lightbox .lb-prev{ left:2px; } .lightbox .lb-next{ right:2px; }
+
+/* ── 연락처 ──────────────────────────────────────── */
+.contacts{
+  width:100%;
+  max-width:340px;
+  display:grid;
+  gap:clamp(18px,5vw,24px);
+}
+.ct-side{
+  border-top:1px solid var(--ink-faint);
+  padding-top:clamp(14px,4vw,18px);
+}
+.ct-role{
+  display:block;
+  font-size:8.5px;
+  letter-spacing:.3em;
+  text-indent:.3em;
+  opacity:.5;
+  text-align:center;
+  margin-bottom:clamp(10px,3vw,14px);
+}
+.ct-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:7px 2px;
+  font-family:var(--kr);
+  font-size:12px;
+  font-weight:300;
+}
+.ct-row .who{ opacity:.62; font-size:11px; }
+.ct-row .nm{ flex:1; text-align:left; padding-left:12px; font-weight:400; }
+.ct-row a{
+  color:var(--ink);
+  text-decoration:none;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:5px 11px;
+  font-size:10px;
+  letter-spacing:.06em;
+  white-space:nowrap;
+  transition:background .2s;
+}
+.ct-row a:hover{ background:rgba(45,60,205,.06); }
+
+/* 계좌 (4페이지) : 1페이지 .acct 스타일을 한글용으로 다듬음 */
+.banks{ width:100%; max-width:340px; }
+.bank-side{ margin-top:clamp(16px,4.5vw,22px); }
+.bank-side .ct-role{ text-align:left; margin-bottom:8px; }
+.bank-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:11px 2px;
+  border-top:1px solid var(--ink-faint);
+  font-family:var(--kr);
+  font-size:11.5px;
+  font-weight:300;
+}
+.bank-row:last-child{ border-bottom:1px solid var(--ink-faint); }
+.bank-row .who{ opacity:.6; font-size:10.5px; white-space:nowrap; }
+.bank-row .no{ flex:1; text-align:left; padding-left:12px; }
+</style>
+<script>document.documentElement.className='js';</script>
+</head>
+<body>
+
+<!-- 코너 리본 원본 : 네 모서리에서 <use>로 불러 쓰고 CSS로 좌우/상하 반전 -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+  <defs>
+    <g id="ribbon-corner" fill="none" stroke="currentColor" stroke-width="1.35"
+       stroke-linecap="round" stroke-linejoin="round">
+      <!-- 위로 선 고리 (좁고 끝이 뾰족한 물방울 모양) -->
+      <path d="M22 22 C16.8 13.6 15.6 4.2 20.6 3 C26.2 1.8 26.8 11.4 22 22"/>
+      <!-- 왼쪽으로 누운 고리 -->
+      <path d="M22 22 C13.6 27.2 4.2 28.2 3 23.2 C1.8 17.8 11.4 17.2 22 22"/>
+      <!-- 오른쪽으로 흐르는 끈 (은은한 S자) -->
+      <path d="M22 22 C31 18.6 37 24 46 20.6 C55 17.2 61 22 71 18.2"/>
+      <!-- 아래로 흐르는 끈 (S자로 두 번 흔들림) -->
+      <path d="M22 22 C26 30 19 36 21 44.6 C23 53.2 16 58 18.6 71"/>
+    </g>
+
+    <!-- 끈이 길게 흘러내리는 버전 (지금은 미사용 : 쓰려면 <use href="#ribbon-corner-long"> 에
+         viewBox="0 0 74 795" 와 class="mark tl long" 을 함께 지정) -->
+    <g id="ribbon-corner-long" fill="none" stroke="currentColor" stroke-width="1.35"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 22 C16.8 13.6 15.6 4.2 20.6 3 C26.2 1.8 26.8 11.4 22 22"/>
+      <path d="M22 22 C13.6 27.2 4.2 28.2 3 23.2 C1.8 17.8 11.4 17.2 22 22"/>
+      <path d="M22 22 C31 18.6 37 24 46 20.6 C55 17.2 61 22 71 18.2"/>
+      <path d="M22 22 C27 70 15 120 21 170 C27 222 14 272 20 322
+               C26 374 14 424 20 474 C26 526 15 578 21 630
+               C27 682 15 726 21 762 C24 776 20 783 15 778"/>
+    </g>
+  </defs>
+</svg>
+
+<main class="page">
+
+  <!-- ══════════════ PAGE 1 ══════════════ -->
+  <section class="card card--gift">
+    <span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+    <p class="gift-line wipe d1">Here begins forever</p>
+    <svg class="gift-names arc wipe d2" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
+      <defs><path id="arcGift" d="M14 100 Q200 26 386 100" fill="none"/></defs>
+      <text text-anchor="middle"><textPath href="#arcGift" startOffset="50%">Jiwon &amp; Jeonghun</textPath></text>
+    </svg>
+
+    <!-- 편지봉투 -->
+    <img class="letter-icon reveal" src="./icon/letter.png" alt="편지 봉투">
+
+    <button class="gift-btn wipe d3" type="button" aria-expanded="false" aria-controls="giftPanel">add to gift</button>
+
+    <div class="gift-panel" id="giftPanel">
+      <div>
+        <div class="acct">
+          <span class="who">GROOM</span>
+          <span class="no" data-acct="국민 123456-78-901234">국민 123456-78-901234</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+        <div class="acct">
+          <span class="who">BRIDE</span>
+          <span class="no" data-acct="신한 110-234-567890">신한 110-456-035232</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ PAGE 2 ══════════════ -->
+  <section class="card card--main">
+    <span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+    <h1 class="title wipe">SAVE<span class="the">The</span>DATE</h1>
+
+    <div class="dateline wipe d1">
+      <span></span>
+      <span class="day" style="font-size: 13px !important; font-weight: 300 !important;">2026</span>
+      <span class="rule"></span>
+      <span class="day">11.14</span>
+      <span class="rule"></span>
+      <span class="day" style="font-size: 13px !important; font-weight: 300 !important;">SATURDAY</span>
+    </div>
+
+    <!-- 예식까지 남은 시간 : data-target 의 날짜·시각만 고치면 된다 (한국 시간 기준) -->
+    <div class="countdown wipe d2" id="countdown" data-target="2026-11-14T12:00:00+09:00">
+      <p class="cd-label">COUNTING DOWN</p>
+      <div class="cd-nums">
+        <span class="cd-unit"><b data-cd="d">--</b><span>DAYS</span></span>
+        <span class="cd-sep">:</span>
+        <span class="cd-unit"><b data-cd="h">--</b><span>HOURS</span></span>
+        <span class="cd-sep">:</span>
+        <span class="cd-unit"><b data-cd="m">--</b><span>MINUTES</span></span>
+      </div>
+      <p class="cd-kr">우리의 결혼식까지</p>
+    </div>
+
+    <!-- 큐피드 -->
+    <img src="./icon/cupid.png" style="height: 110px; margin: 20px 0 20px 0;">
+
+    <!-- 사진 : image 폴더의 wd-web.jpg (원본 wd.jpg를 900px로 줄인 웹용) -->
+    <figure class="photo reveal d4">
+      <img src="./image/wd-web.jpg" alt=""
+           onerror="this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 264 200%22%3E%3Crect width=%22264%22 height=%22200%22 fill=%22%23E9E3D6%22/%3E%3Ctext x=%22132%22 y=%22104%22 font-family=%22Helvetica%22 font-size=%2210%22 letter-spacing=%223%22 fill=%22%23A99F8B%22 text-anchor=%22middle%22%3EPHOTO%3C/text%3E%3C/svg%3E';this.onerror=null;">
+    </figure>
+
+    <svg class="names arc wipe d2" viewBox="0 0 400 118" role="img" aria-label="Jiwon &amp; Jeonghoon">
+      <defs><path id="arcMain" d="M14 100 Q200 26 386 100" fill="none"/></defs>
+      <text text-anchor="middle"><textPath href="#arcMain" startOffset="50%">Jiwon &amp; Jeonghoon</textPath></text>
+    </svg>
+
+   <!-- 꽃다발 -->
+    <img src="./icon/flower.png" style="height: 130px; margin-top: -30px;">
+
+    <p class="contact wipe">
+      for any questions don't hesitate to contact us<br>
+      <a href="tel:01053268044">+82 10 5326 8044</a>
+    </p>
+  </section>
+
+
+  <!-- ══════════════ PAGE 3 : 달력 + 오시는 길 ══════════════ -->
+  <section class="card card--info">
+    <span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+    <p class="sec-title wipe">The Day</p>
+    <p class="sec-label wipe d1">SAVE THE DATE</p>
+    <span class="sec-rule"></span>
+
+    <!-- 2026년 11월 : 1일이 일요일, 30일까지. 결혼식은 14일(토) -->
+    <div class="cal reveal d1">
+      <p class="cal-month">NOVEMBER 2026</p>
+      <div class="cal-grid">
+        <span class="dow">SUN</span><span class="dow">MON</span><span class="dow">TUE</span>
+        <span class="dow">WED</span><span class="dow">THU</span><span class="dow">FRI</span>
+        <span class="dow">SAT</span>
+
+        <span class="d sun">1</span><span class="d">2</span><span class="d">3</span>
+        <span class="d">4</span><span class="d">5</span><span class="d">6</span><span class="d">7</span>
+
+        <span class="d sun">8</span><span class="d">9</span><span class="d">10</span>
+        <span class="d">11</span><span class="d">12</span><span class="d">13</span>
+        <span class="d on">14</span>
+
+        <span class="d sun">15</span><span class="d">16</span><span class="d">17</span>
+        <span class="d">18</span><span class="d">19</span><span class="d">20</span><span class="d">21</span>
+
+        <span class="d sun">22</span><span class="d">23</span><span class="d">24</span>
+        <span class="d">25</span><span class="d">26</span><span class="d">27</span><span class="d">28</span>
+
+        <span class="d sun">29</span><span class="d">30</span>
+      </div>
+      <p class="cal-note">2026년 11월 14일 토요일<br><strong>오후 1시 50분</strong></p>
+    </div>
+
+    <span class="sec-rule"></span>
+
+    <p class="sec-title wipe">Where</p>
+    <p class="sec-label wipe d1">LOCATION</p>
+
+    <div class="map reveal d1" style="margin-top:clamp(18px,5vw,24px)">
+      <iframe
+        src="https://maps.google.com/maps?q=%EA%B2%BD%EB%B6%81%20%EC%83%81%EC%A3%BC%EC%8B%9C%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4%20%EC%9B%A8%EB%94%A9&amp;z=15&amp;hl=ko&amp;output=embed"
+        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
+        title="마리앙스 웨딩컨벤션 위치"></iframe>
+    </div>
+
+    <p class="place reveal d2">
+      마리앙스 웨딩컨벤션
+      <!-- ▼ 정확한 도로명주소와 층/홀 이름을 여기에 적어주세요 -->
+      <span class="addr">경상북도 상주시 삼백로 343 마리앙스홀</span>
+    </p>
+
+    <div class="map-links reveal d3">
+      <a href="https://map.kakao.com/?q=%EC%83%81%EC%A3%BC%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4" target="_blank" rel="noopener">카카오맵</a>
+      <a href="https://map.naver.com/p/search/%EC%83%81%EC%A3%BC%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4" target="_blank" rel="noopener">네이버지도</a>
+      <a href="https://www.google.com/maps/search/?api=1&amp;query=%EA%B2%BD%EB%B6%81%20%EC%83%81%EC%A3%BC%EC%8B%9C%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4" target="_blank" rel="noopener">구글지도</a>
+    </div>
+  </section>
+
+
+  <!-- ══════════════ PAGE 4 : 갤러리 + 연락처 + 계좌 ══════════════ -->
+  <section class="card card--gallery">
+    <span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+    <p class="sec-title wipe">Our Moments</p>
+    <p class="sec-label wipe d1">GALLERY</p>
+    <span class="sec-rule"></span>
+
+    <!-- 사진 : image/gallery/01.jpg ~ 10.jpg 를 넣으면 자동으로 채워진다 -->
+    <div class="gallery reveal d1" id="gallery"></div>
+
+    <span class="sec-rule" style="margin-top:clamp(30px,8vw,42px)"></span>
+
+    <p class="sec-title wipe">Contact</p>
+    <p class="sec-label wipe d1">마음을 전하실 곳</p>
+
+    <div class="contacts reveal d1" style="margin-top:clamp(20px,5.5vw,26px)">
+      <div class="ct-side">
+        <span class="ct-role">GROOM · 신랑측</span>
+        <div class="ct-row"><span class="who">신랑</span><span class="nm">최정훈</span><a href="tel:01053268044">전화</a></div>
+        <div class="ct-row"><span class="who">아버지</span><span class="nm">김○○</span><a href="tel:01000000000">전화</a></div>
+        <div class="ct-row"><span class="who">어머니</span><span class="nm">이○○</span><a href="tel:01000000000">전화</a></div>
+      </div>
+      <div class="ct-side">
+        <span class="ct-role">BRIDE · 신부측</span>
+        <div class="ct-row"><span class="who">신부</span><span class="nm">황지원</span><a href="tel:01023152568">전화</a></div>
+      </div>
+    </div>
+
+    <span class="sec-rule" style="margin-top:clamp(30px,8vw,42px)"></span>
+
+    <p class="sec-title wipe">Gift</p>
+    <p class="sec-label wipe d1">축하의 마음을 전해주세요</p>
+
+    <div class="banks reveal d1" style="margin-top:clamp(18px,5vw,24px)">
+      <div class="bank-side">
+        <span class="ct-role">GROOM · 신랑측</span>
+        <div class="bank-row">
+          <span class="who">신랑</span>
+          <span class="no" data-acct="국민 123456-78-901234">국민 123456-78-901234</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+        <div class="bank-row">
+          <span class="who">아버지</span>
+          <span class="no" data-acct="농협 302-0000-0000-00">농협 302-0000-0000-00</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+      </div>
+      <div class="bank-side">
+        <span class="ct-role">BRIDE · 신부측</span>
+        <div class="bank-row">
+          <span class="who">신부</span>
+          <span class="no" data-acct="신한 110-456-035232">신한 110-456-035232</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+      </div>
+    </div>
+
+    <p class="contact wipe" style="margin-top:clamp(34px,9vw,46px)">
+      thank you for celebrating with us
+    </p>
+  </section>
+
+</main>
+
+<!-- 사진 확대 보기 -->
+<div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
+  <button class="lb-close" type="button" aria-label="닫기">CLOSE</button>
+  <button class="lb-nav lb-prev" type="button" aria-label="이전 사진">&#8249;</button>
+  <img src="" alt="">
+  <button class="lb-nav lb-next" type="button" aria-label="다음 사진">&#8250;</button>
+</div>
+
+<script>
+/* 라인아트 : 도형별 실제 길이로 dash 세팅 (선이 그려지는 효과) */
+var reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if(!reduceMotion){
+  document.querySelectorAll('.draw svg').forEach(function(svg){
+    svg.querySelectorAll('path, ellipse, circle').forEach(function(sh){
+      var len = 0;
+      try{ len = sh.getTotalLength(); }catch(e){}
+      if(!len) return;
+      sh.style.strokeDasharray  = len;
+      sh.style.strokeDashoffset = len;
+    });
+  });
+}
+
+/* 스크롤 등장 */
+var io = new IntersectionObserver(function(entries){
+  entries.forEach(function(e){
+    if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
+  });
+}, { threshold:.18, rootMargin:'0px 0px -8% 0px' });
+document.querySelectorAll('.reveal, .wipe').forEach(function(el){ io.observe(el); });
+
+/* add to gift 토글 */
+var btn   = document.querySelector('.gift-btn');
+var panel = document.getElementById('giftPanel');
+btn.addEventListener('click', function(){
+  var open = panel.classList.toggle('open');
+  btn.setAttribute('aria-expanded', open);
+});
+
+/* 계좌 복사 */
+document.querySelectorAll('.copy').forEach(function(b){
+  b.addEventListener('click', function(){
+    var txt = b.parentNode.querySelector('.no').dataset.acct;
+    var done = function(){
+      b.textContent = 'COPIED'; b.classList.add('done');
+      setTimeout(function(){ b.textContent='COPY'; b.classList.remove('done'); }, 1600);
+    };
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(txt).then(done);
+    }else{
+      var ta = document.createElement('textarea');
+      ta.value = txt; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); done(); }catch(err){}
+      document.body.removeChild(ta);
+    }
+  });
+});
+
+/* ── 예식까지 남은 시간 ── */
+(function(){
+  var cd = document.getElementById('countdown');
+  if(!cd) return;
+
+  var target = new Date(cd.dataset.target).getTime();
+  var out = {
+    d: cd.querySelector('[data-cd="d"]'),
+    h: cd.querySelector('[data-cd="h"]'),
+    m: cd.querySelector('[data-cd="m"]')
+  };
+  var label = cd.querySelector('.cd-label');
+  var krLine = cd.querySelector('.cd-kr');
+
+  function pad(n){ return (n < 10 ? '0' : '') + n; }
+
+  function tick(){
+    var diff = target - Date.now();
+
+    if(diff <= 0){
+      cd.classList.add('done');
+      label.textContent = 'THE DAY IS HERE';
+      krLine.textContent = '와주셔서 감사합니다';
+      clearInterval(timer);
+      return;
+    }
+
+    var mins = Math.floor(diff / 60000);
+    out.d.textContent = Math.floor(mins / 1440);
+    out.h.textContent = pad(Math.floor((mins % 1440) / 60));
+    out.m.textContent = pad(mins % 60);
+  }
+
+  tick();
+  var timer = setInterval(tick, 1000);
+})();
+
+/* ── 갤러리 : image/gallery/01.jpg ~ 10.jpg 를 자동으로 불러온다 ──
+   사진 수를 바꾸려면 GALLERY_COUNT 만 고치면 된다 */
+var GALLERY_COUNT = 10;
+var PHOTO_HOLDER = 'data:image/svg+xml;utf8,'
+  + '%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 118%22%3E'
+  + '%3Crect width=%22100%22 height=%22118%22 fill=%22%23EFE9DC%22/%3E'
+  + '%3Ctext x=%2250%22 y=%2263%22 font-family=%22Helvetica%22 font-size=%227%22 letter-spacing=%222%22 fill=%22%23B6AC96%22 text-anchor=%22middle%22%3EPHOTO%3C/text%3E%3C/svg%3E';
+
+var galleryEl = document.getElementById('gallery');
+var shots = [];
+if(galleryEl){
+  for(var i=1; i<=GALLERY_COUNT; i++){
+    var name = (i<9 ? '0' : '') + i;
+    var src  = './image/gallery/' + name + '.jpg';
+    shots.push(src);
+
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.setAttribute('aria-label', name + '번 사진 크게 보기');
+    b.dataset.idx = i-1;
+
+    var im = document.createElement('img');
+    im.src = src;
+    im.alt = '';
+    im.loading = 'lazy';
+    im.onerror = function(){ this.src = PHOTO_HOLDER; this.onerror = null; };
+
+    b.appendChild(im);
+    galleryEl.appendChild(b);
+  }
+}
+
+/* 사진 확대 보기 */
+var lb      = document.getElementById('lightbox');
+var lbImg   = lb ? lb.querySelector('img') : null;
+var lbIndex = 0;
+
+function lbOpen(i){
+  lbIndex = (i + shots.length) % shots.length;
+  var thumb = galleryEl.children[lbIndex].querySelector('img');
+  /* 사진이 아직 없는 칸이면 플레이스홀더를 그대로 보여준다 */
+  lbImg.src = thumb.src;
+  lb.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+function lbClose(){
+  lb.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+if(galleryEl && lb){
+  galleryEl.addEventListener('click', function(e){
+    var b = e.target.closest('button');
+    if(b) lbOpen(parseInt(b.dataset.idx, 10));
+  });
+  lb.querySelector('.lb-close').addEventListener('click', lbClose);
+  lb.querySelector('.lb-prev').addEventListener('click', function(){ lbOpen(lbIndex - 1); });
+  lb.querySelector('.lb-next').addEventListener('click', function(){ lbOpen(lbIndex + 1); });
+  lb.addEventListener('click', function(e){ if(e.target === lb) lbClose(); });
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape')     lbClose();
+    if(e.key === 'ArrowLeft')  lbOpen(lbIndex - 1);
+    if(e.key === 'ArrowRight') lbOpen(lbIndex + 1);
+  });
+}
+</script>
+</body>
+</html>
