@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Save the Date — Jiwon &amp; Jeonghoon</title>
+<title>Save the Date — Jiwon &amp; Jeonghun</title>
 <meta name="theme-color" content="#F7F3EA">
 
 <!-- ============================================================
@@ -16,6 +16,13 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<!-- 1페이지에 바로 쓰이는 로컬 폰트는 미리 받는다.
+     늦게 도착하면 글자 폭이 바뀌면서 진입 애니메이션 중에 화면이 한 번 출렁인다 -->
+<link rel="preload" href="./font/BrittanySignature.ttf" as="font" type="font/ttf" crossorigin>
+<link rel="preload" href="./font/Festigan.otf" as="font" type="font/otf" crossorigin>
+<!-- 첫 화면 이미지도 미리 -->
+<link rel="preload" href="./icon/letter.png" as="image">
 <link href="https://fonts.googleapis.com/css2?family=Jost:wght@200;300;400;500&family=Parisienne&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&family=Noto+Sans+KR:wght@200;300;400;500&display=swap" rel="stylesheet">
 
 <style>
@@ -50,14 +57,14 @@
 }
 @font-face{
   font-family:'Festigan';
-  src:url('./font/Festigan.otf') format('truetype');
+  src:url('./font/Festigan.otf') format('opentype');   /* .otf 는 opentype (truetype 으로 적으면 건너뛰는 브라우저가 있다) */
   font-weight:400;
   font-style:normal;
   font-display:swap;
 }
 @font-face{
   font-family:'Sergia';
-  src:url('./font/Sergia.otf') format('truetype');
+  src:url('./font/Sergia.otf') format('opentype');
   font-weight:400;
   font-style:normal;
   font-display:swap;
@@ -121,13 +128,13 @@ body{
   align-items:center;
 }
 .card--main{ justify-content:flex-start; padding-top:clamp(52px,13vw,74px); }
-/* 1페이지는 세로 가운데 정렬 : 아래쪽 section 패딩(100px)만큼 위로 쏠리므로
-   위아래 패딩을 같은 값으로 다시 잡아준다 */
+/* 1페이지 : 가운데 정렬은 내용이 화면보다 길어지면 위가 잘려 붙어 보이므로
+   위에서부터 쌓되 상단 여백을 넉넉히 준다 (아래는 스크롤 안내 자리) */
 .card--gift{
-  justify-content:center;
+  justify-content:flex-start;
   gap:0;
-  padding-top:clamp(56px,14vw,78px);
-  padding-bottom:clamp(56px,14vw,78px) !important;
+  padding-top:clamp(86px,22vw,170px);
+  padding-bottom:clamp(96px,24vw,124px) !important;
 }
 .card + .card{ border-top:1px solid var(--ink-faint); }   /* 두 번째 카드부터 구분선 */
 
@@ -243,11 +250,11 @@ body{
   margin-top:clamp(12px,3.4vw,16px);
   font-family:var(--kr);
   font-size:11.5px;
-  font-weight:300;
+  font-weight:400;
   letter-spacing:.02em;
-  opacity:.66;
+  opacity:.77;
 }
-.cd-kr b{ font-weight:500; opacity:.9; font-variant-numeric:tabular-nums; }
+.cd-kr b{ font-weight:700; font-variant-numeric:tabular-nums; }
 /* 예식 당일이 지나면 */
 .countdown.done .cd-nums{ display:none; }
 .countdown.done .cd-kr{ font-size:12px; opacity:.8; margin-top:clamp(10px,3vw,14px); }
@@ -313,9 +320,10 @@ body{
   font-family:var(--brittany);
   font-weight: 600 !important;
   font-size:clamp(34px,10vw,42px);
-  margin-top:clamp(8px,2.5vw,12px);
+  margin-top:clamp(8px,2.5vw,32px);
   text-align:center;
-  margin-bottom: -16px;
+  /* 아치가 깊어진 만큼 편지를 위로 당겨 뚜껑이 아치 안쪽에 들어오게 한다 */
+  margin-bottom:-22px;
 }
 /* 이름을 ^ 산 모양으로 : 앞 이름은 / , 뒤 이름은 \ 방향 (1·2페이지 공통) */
 /* 이름은 위로 볼록한 완만한 아치를 따라 흐른다 (ref2.png 참고)
@@ -327,7 +335,7 @@ body{
   height:auto;
   overflow:visible;
 }
-.arc text{ fill:currentColor; }
+.arc text{ fill:currentColor;     letter-spacing: 4px; }
 .gift-names.arc text{ font-size:47px; }   /* viewBox(400) 기준 단위 */
 .names.arc text    { font-size:35px; }
 /* ── 1페이지 : 이름 · 날짜 · 장소 블록 ──────────── */
@@ -352,8 +360,8 @@ body{
   margin:clamp(13px,3.8vw,17px) auto;
 }
 .intro-date{
-  font-size:clamp(11.5px,3.3vw,12.5px);
-  font-weight:300;
+  font-size:clamp(11.5px,3.3vw,12px);
+  font-weight:400;
   letter-spacing:.05em;
   line-height:1.85;
   opacity:.88;
@@ -361,13 +369,13 @@ body{
 .intro-date .dot{ opacity:.35; margin:0 5px; }
 .intro-place{
   margin-top:7px;
-  font-size:clamp(10.5px,3vw,11.5px);
-  font-weight:300;
+  font-size:clamp(10.5px,3vw,12px);
+  font-weight:400;
   letter-spacing:.03em;
   line-height:1.75;
   opacity:.6;
 }
-.intro-place .hall{ display:block; font-size:.92em; opacity:.85; }
+.intro-place .hall{ display:block; font-size:.92em; opacity:.85; font-weight: 400; }
 
 .gift-btn{
   margin-top:clamp(26px,7vw,34px);
@@ -451,21 +459,28 @@ body{
    첫 화면은 스크롤 없이 바로 보이므로, 다른 페이지보다 한 박자 느리게
    (카드 → 리본 → 문구 → 이름 → 편지 → 정보 → 스크롤 안내) 순서로 풀어놓는다.
    각 요소의 시작 시각은 HTML 의 transition-delay 인라인 값으로 조절 */
-.js .card--gift{ animation:pageIn 1.4s ease both; }
-@keyframes pageIn{ from{ opacity:0 } to{ opacity:1 } }
-
+/* 첫 화면은 mask(훑기) 대신 opacity + transform 만 쓴다.
+   mask-position 은 GPU 합성이 되지 않아 매 프레임 다시 그려지고, 특히 SVG 글자에서 끊긴다 */
 .js .card--gift .wipe{
-  transition-duration:1.25s;   /* 글자가 훑고 지나가는 속도 */
+  -webkit-mask-image:none; mask-image:none;
+  opacity:0;
+  transform:translate3d(0,16px,0);
+  transition:opacity 1.1s cubic-bezier(.22,.61,.36,1),
+             transform 1.1s cubic-bezier(.22,.61,.36,1);
+  will-change:opacity, transform;
 }
+.js .card--gift .wipe.in{ opacity:1; transform:translate3d(0,0,0); }
+
 .js .card--gift .reveal{
-  transform:translateY(26px);
-  transition-duration:1.35s;
+  transform:translate3d(0,24px,0);
+  transition-duration:1.2s;
+  will-change:opacity, transform;
 }
-.js .card--gift .reveal.in{ transform:none; }
+.js .card--gift .reveal.in{ transform:translate3d(0,0,0); }
 
 /* 네 모서리 리본 : 살짝 작은 상태에서 제자리로.
    코너마다 기본 transform(좌우·상하 반전)이 달라 keyframes 를 따로 둔다 */
-.js .card--gift .mark{ animation:1.3s cubic-bezier(.22,.61,.36,1) both; }
+.js .card--gift .mark{ animation:1.3s cubic-bezier(.22,.61,.36,1) both; will-change:opacity, transform; }
 .js .card--gift .mark.tl{ animation-name:markInTL; animation-delay:.20s; }
 .js .card--gift .mark.tr{ animation-name:markInTR; animation-delay:.34s; }
 .js .card--gift .mark.bl{ animation-name:markInBL; animation-delay:.48s; }
@@ -491,10 +506,11 @@ body{
   pointer-events:none;
 }
 .scroll-hint .sh-label{
-  font-size:7.5px;
+  font-size:8.3px;
+  font-weight: 500;
   letter-spacing:.34em;
   text-indent:.34em;
-  opacity:.42;
+  opacity:.72;
 }
 .scroll-hint .sh-line{
   width:1px; height:32px;
@@ -522,16 +538,22 @@ body{
     -webkit-mask-position:0 50%; mask-position:0 50%; transition:none;
   }
   /* 1페이지 진입 연출도 끈다 (mark 는 좌우·상하 반전을 써야 하므로 transform 은 건드리지 않는다) */
-  .js .card--gift, .js .card--gift .mark,
+  .js .card--gift .mark,
   .js .letter-icon.in, .js .scroll-hint.in .sh-line{
     animation:none !important; opacity:1;
+  }
+  /* 1페이지용 규칙이 위 .js .reveal / .js .wipe 보다 선택자가 강하므로 여기서 다시 눌러준다 */
+  .js .card--gift .reveal, .js .card--gift .wipe{
+    opacity:1 !important; transform:none !important; transition:none !important;
   }
   html{ scroll-behavior:auto; }
 }
 
 .letter-icon {
     display: block;
-    height: 170px;      /* 450x300 → 3:2 비율 */
+    height: clamp(132px,38vw,156px);   /* 원본 1536x724 */
+    width: auto;
+    max-width: 100%;
     margin-bottom: clamp(14px,4vw,20px);
 }
 
@@ -851,12 +873,16 @@ section { padding-bottom: 100px !important; }
     <!-- 진입 순서는 각 요소의 transition-delay 로 조절한다 (리본 0.2s ~ 스크롤 안내 2.7s) -->
     <p class="gift-line wipe" style="transition-delay:.55s">Here begins forever</p>
     <svg class="gift-names arc wipe" style="transition-delay:1s" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
-      <defs><path id="arcGift" d="M14 100 Q200 26 386 100" fill="none"/></defs>
-      <text text-anchor="middle"><textPath href="#arcGift" startOffset="50%">Jiwon &amp; Jeonghun</textPath></text>
+      <!-- 아치를 더 세우면 편지 뚜껑을 감싸는 모양이 된다.
+           끝점 기울기 = atan(106-(-10) / 186) ≈ 32° 로, 편지 뚜껑 사선(31~34°)과 같은 각도 -->
+      <defs><path id="arcGift" d="M14 106 Q200 -10 386 106" fill="none"/></defs>
+      <!-- dx -2.5 : & 양옆 간격을 자간(5)의 절반으로 -->
+      <text text-anchor="middle"><textPath href="#arcGift" startOffset="52%">Jiwon<tspan dx="-2.5">&amp;</tspan><tspan dx="-2.5">Jeonghun</tspan></textPath></text>
     </svg>
 
     <!-- 편지봉투 -->
-    <img class="letter-icon reveal" style="transition-delay:1.5s" src="./icon/letter.png" alt="편지 봉투">
+    <img class="letter-icon reveal" style="transition-delay:1.5s" src="./icon/letter.png" alt="편지 봉투"
+         width="1536" height="724" decoding="async" fetchpriority="high">
 
     <!-- <button class="gift-btn wipe d3" type="button" aria-expanded="false" aria-controls="giftPanel">add to gift</button> -->
 
@@ -866,8 +892,7 @@ section { padding-bottom: 100px !important; }
       <span class="intro-rule reveal" style="transition-delay:2.05s"></span>
       <p class="intro-date reveal" style="transition-delay:2.15s">2026년 11월 14일 토요일<span class="dot">·</span>오후 1시 50분</p>
       <p class="intro-place reveal" style="transition-delay:2.3s">
-        상주 마리앙스 웨딩컨벤션
-        <span class="hall">마리앙스홀</span>
+        상주 마리앙스 웨딩컨벤션 마리앙스홀
       </p>
     </div>
 
@@ -875,22 +900,6 @@ section { padding-bottom: 100px !important; }
     <div class="scroll-hint reveal" style="transition-delay:2.7s">
       <span class="sh-label">SCROLL</span>
       <span class="sh-line"></span>
-    </div>
-
-    <div class="gift-panel" id="giftPanel">
-      <span>2026.11.14(토) 경상북도 상주시 마리앙스 웨딩컨벤션</span>
-      <div>
-        <div class="acct">
-          <span class="who">GROOM</span>
-          <span class="no" data-acct="국민 123456-78-901234">국민 123456-78-901234</span>
-          <button class="copy" type="button">COPY</button>
-        </div>
-        <div class="acct">
-          <span class="who">BRIDE</span>
-          <span class="no" data-acct="신한 110-234-567890">신한 110-456-035232</span>
-          <button class="copy" type="button">COPY</button>
-        </div>
-      </div>
     </div>
   </section>
 
@@ -937,9 +946,9 @@ section { padding-bottom: 100px !important; }
            onerror="this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 264 200%22%3E%3Crect width=%22264%22 height=%22200%22 fill=%22%23E9E3D6%22/%3E%3Ctext x=%22132%22 y=%22104%22 font-family=%22Helvetica%22 font-size=%2210%22 letter-spacing=%223%22 fill=%22%23A99F8B%22 text-anchor=%22middle%22%3EPHOTO%3C/text%3E%3C/svg%3E';this.onerror=null;">
     </figure>
 
-    <svg class="names arc wipe d2" viewBox="0 0 400 118" role="img" aria-label="Jiwon &amp; Jeonghoon">
+    <svg class="names arc wipe d2" viewBox="0 0 400 118" role="img" aria-label="jiwon&amp;jeonghun">
       <defs><path id="arcMain" d="M14 100 Q200 26 386 100" fill="none"/></defs>
-      <text text-anchor="middle"><textPath href="#arcMain" startOffset="50%">Jiwon &amp; Jeonghoon</textPath></text>
+      <text text-anchor="middle"><textPath href="#arcMain" startOffset="50%">Jiwon&amp;Jeonghun</textPath></text>
     </svg>
 
    <!-- 꽃다발 -->
@@ -1122,6 +1131,10 @@ document.querySelectorAll('.reveal, .wipe').forEach(function(el){
     requestAnimationFrame(function(){
       requestAnimationFrame(function(){ el.classList.add('in'); });
     });
+    /* 등장이 끝나면 합성 레이어 힌트를 놓아준다 (편지봉투는 계속 떠 있으므로 제외) */
+    if(!el.classList.contains('letter-icon')){
+      el.addEventListener('transitionend', function(){ el.style.willChange = 'auto'; }, { once:true });
+    }
   }else{
     io.observe(el);
   }
