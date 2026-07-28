@@ -146,14 +146,19 @@ body{
   align-items:center;
 }
 .card--main{ justify-content:flex-start; padding-top:clamp(52px,13vw,74px); }
-/* 1페이지 : 가운데 정렬은 내용이 화면보다 길어지면 위가 잘려 붙어 보이므로
-   위에서부터 쌓되 상단 여백을 넉넉히 준다 (아래는 스크롤 안내 자리) */
+/* 1페이지 : 내용 전체를 화면 세로 가운데에 둔다.
+   여백 기준을 vw(화면 가로) 로 잡으면 카드 폭이 430px 로 고정된 PC 와
+   폭이 그대로 화면인 폰에서 값이 크게 어긋나므로, 세로 여백은 dvh(화면 높이) 로 잡는다. */
 .card--gift{
   justify-content:flex-start;
   gap:0;
-  padding-top:clamp(86px,22vw,170px);
-  padding-bottom:clamp(96px,24vw,124px) !important;
+  padding-top:clamp(40px,7dvh,76px);
+  padding-bottom:clamp(56px,9dvh,96px) !important;   /* 아래는 스크롤 안내 자리 */
 }
+/* 가운데 정렬은 justify-content:center 대신 auto 마진으로.
+   내용이 화면보다 길어지면 auto 가 저절로 0 이 되어 위가 잘리지 않는다 */
+.card--gift > .gift-line{ margin-top:auto; }
+.card--gift > .intro{ margin-bottom:auto; }
 .card + .card{ border-top:1px solid var(--ink-faint); }   /* 두 번째 카드부터 구분선 */
 
 /* 코너 리본 매듭 (ref.png 참고 : 매듭에서 두 방향으로 끈이 뻗는 형태) */
@@ -332,7 +337,6 @@ body{
   text-align:center;
   font-weight: 200;
   letter-spacing: -1px;
-  margin-bottom: -16px;
 }
 .gift-names{
   font-family:var(--brittany);
@@ -508,14 +512,14 @@ body{
 @keyframes markInBR{ from{ opacity:0; transform:scale(-1,-1) scale(.82) } to{ opacity:1; transform:scale(-1,-1) } }
 
 /* 편지봉투 : 다 나타난 뒤 아주 천천히 위아래로 떠 있는다 */
-.js .letter-icon.in{ animation:floaty 5s ease-in-out 2.9s infinite; }
+.js .letter-icon.in{ animation:floaty 3s ease-in-out 2.1s infinite; }
 @keyframes floaty{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
 
 /* 스크롤 안내 : 실선이 위에서 아래로 흘러내린다 */
 .scroll-hint{
   position:absolute;
   left:0; right:0;
-  bottom:clamp(22px,6.5vw,32px);
+  bottom:clamp(18px,3dvh,32px);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -568,7 +572,7 @@ body{
 
 .letter-icon {
     display: block;
-    height: clamp(132px,38vw,156px);   /* 원본 1536x724 */
+    height: clamp(118px,17dvh,156px);   /* 원본 1536x724 — 화면이 낮은 폰에서는 함께 줄어든다 */
     width: auto;
     max-width: 100%;
     margin-bottom: clamp(14px,4vw,20px);
