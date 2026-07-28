@@ -121,7 +121,14 @@ body{
   align-items:center;
 }
 .card--main{ justify-content:flex-start; padding-top:clamp(52px,13vw,74px); }
-.card--gift{ justify-content:center; gap:0; }
+/* 1페이지는 세로 가운데 정렬 : 아래쪽 section 패딩(100px)만큼 위로 쏠리므로
+   위아래 패딩을 같은 값으로 다시 잡아준다 */
+.card--gift{
+  justify-content:center;
+  gap:0;
+  padding-top:clamp(56px,14vw,78px);
+  padding-bottom:clamp(56px,14vw,78px) !important;
+}
 .card + .card{ border-top:1px solid var(--ink-faint); }   /* 두 번째 카드부터 구분선 */
 
 /* 코너 리본 매듭 (ref.png 참고 : 매듭에서 두 방향으로 끈이 뻗는 형태) */
@@ -209,11 +216,11 @@ body{
   display:flex;
   align-items:flex-start;
   justify-content:center;
-  gap:clamp(13px,4.2vw,19px);
+  gap:clamp(7px,2.4vw,11px);   /* DAYS/HOURS/MINUTES/SECONDS 4칸이라 간격을 줄였다 */
 }
 .cd-unit{ display:flex; flex-direction:column; align-items:center; gap:7px; }
 .cd-unit b{
-  font-size:clamp(23px,6.8vw,28px);
+  font-size:clamp(20px,5.8vw,25px);
   font-weight:300;
   line-height:1;
   letter-spacing:.02em;
@@ -226,7 +233,7 @@ body{
   opacity:.5;
 }
 .cd-sep{
-  font-size:clamp(17px,5vw,21px);
+  font-size:clamp(15px,4.4vw,18px);
   font-weight:200;
   line-height:1;
   opacity:.3;
@@ -235,11 +242,12 @@ body{
 .cd-kr{
   margin-top:clamp(12px,3.4vw,16px);
   font-family:var(--kr);
-  font-size:10.5px;
+  font-size:11.5px;
   font-weight:300;
-  letter-spacing:.06em;
-  opacity:.62;
+  letter-spacing:.02em;
+  opacity:.66;
 }
+.cd-kr b{ font-weight:500; opacity:.9; font-variant-numeric:tabular-nums; }
 /* 예식 당일이 지나면 */
 .countdown.done .cd-nums{ display:none; }
 .countdown.done .cd-kr{ font-size:12px; opacity:.8; margin-top:clamp(10px,3vw,14px); }
@@ -322,6 +330,45 @@ body{
 .arc text{ fill:currentColor; }
 .gift-names.arc text{ font-size:47px; }   /* viewBox(400) 기준 단위 */
 .names.arc text    { font-size:35px; }
+/* ── 1페이지 : 이름 · 날짜 · 장소 블록 ──────────── */
+.intro{
+  margin-top:clamp(18px,5vw,24px);
+  text-align:center;
+  font-family:var(--kr);
+  color:var(--ink);
+}
+.intro-names{
+  font-size:clamp(15px,4.4vw,17px);
+  font-weight:400;
+  letter-spacing:.16em;
+  text-indent:.16em;   /* letter-spacing 때문에 오른쪽으로 밀리는 만큼 보정 */
+  line-height:1.4;
+}
+.intro-names .amp{ opacity:.4; margin:0 3px; font-weight:300; }
+.intro-rule{
+  display:block;
+  width:26px; height:1px;
+  background:var(--ink-faint);
+  margin:clamp(13px,3.8vw,17px) auto;
+}
+.intro-date{
+  font-size:clamp(11.5px,3.3vw,12.5px);
+  font-weight:300;
+  letter-spacing:.05em;
+  line-height:1.85;
+  opacity:.88;
+}
+.intro-date .dot{ opacity:.35; margin:0 5px; }
+.intro-place{
+  margin-top:7px;
+  font-size:clamp(10.5px,3vw,11.5px);
+  font-weight:300;
+  letter-spacing:.03em;
+  line-height:1.75;
+  opacity:.6;
+}
+.intro-place .hall{ display:block; font-size:.92em; opacity:.85; }
+
 .gift-btn{
   margin-top:clamp(26px,7vw,34px);
   font-family:var(--script);
@@ -376,7 +423,7 @@ body{
 .js .reveal{
   opacity:0;
   transform:translateY(22px);
-  transition:opacity .9s cubic-bezier(.22,.61,.36,1), transform .9s cubic-bezier(.22,.61,.36,1);
+  transition:opacity 1.15s cubic-bezier(.22,.61,.36,1), transform 1.15s cubic-bezier(.22,.61,.36,1);
 }
 .js .reveal.in{ opacity:1; transform:none; }
 .js .reveal.d1{ transition-delay:.10s } .js .reveal.d2{ transition-delay:.20s }
@@ -392,13 +439,74 @@ body{
   -webkit-mask-size:240% 400%;   mask-size:240% 400%;
   -webkit-mask-repeat:no-repeat; mask-repeat:no-repeat;
   -webkit-mask-position:100% 50%; mask-position:100% 50%;
-  transition:-webkit-mask-position .55s cubic-bezier(.25,.6,.3,1),
-                      mask-position .55s cubic-bezier(.25,.6,.3,1);
+  transition:-webkit-mask-position .95s cubic-bezier(.25,.6,.3,1),
+                      mask-position .95s cubic-bezier(.25,.6,.3,1);
 }
 .js .wipe.in{ -webkit-mask-position:0 50%; mask-position:0 50%; }
 .js .wipe.d1{ transition-delay:.10s } .js .wipe.d2{ transition-delay:.20s }
 .js .wipe.d3{ transition-delay:.30s } .js .wipe.d4{ transition-delay:.40s }
 .js .wipe.d5{ transition-delay:.50s }
+
+/* ── 1페이지 진입 연출 ─────────────────────────────
+   첫 화면은 스크롤 없이 바로 보이므로, 다른 페이지보다 한 박자 느리게
+   (카드 → 리본 → 문구 → 이름 → 편지 → 정보 → 스크롤 안내) 순서로 풀어놓는다.
+   각 요소의 시작 시각은 HTML 의 transition-delay 인라인 값으로 조절 */
+.js .card--gift{ animation:pageIn 1.4s ease both; }
+@keyframes pageIn{ from{ opacity:0 } to{ opacity:1 } }
+
+.js .card--gift .wipe{
+  transition-duration:1.25s;   /* 글자가 훑고 지나가는 속도 */
+}
+.js .card--gift .reveal{
+  transform:translateY(26px);
+  transition-duration:1.35s;
+}
+.js .card--gift .reveal.in{ transform:none; }
+
+/* 네 모서리 리본 : 살짝 작은 상태에서 제자리로.
+   코너마다 기본 transform(좌우·상하 반전)이 달라 keyframes 를 따로 둔다 */
+.js .card--gift .mark{ animation:1.3s cubic-bezier(.22,.61,.36,1) both; }
+.js .card--gift .mark.tl{ animation-name:markInTL; animation-delay:.20s; }
+.js .card--gift .mark.tr{ animation-name:markInTR; animation-delay:.34s; }
+.js .card--gift .mark.bl{ animation-name:markInBL; animation-delay:.48s; }
+.js .card--gift .mark.br{ animation-name:markInBR; animation-delay:.62s; }
+@keyframes markInTL{ from{ opacity:0; transform:scale(.82) }        to{ opacity:1; transform:none } }
+@keyframes markInTR{ from{ opacity:0; transform:scaleX(-1) scale(.82) } to{ opacity:1; transform:scaleX(-1) } }
+@keyframes markInBL{ from{ opacity:0; transform:scaleY(-1) scale(.82) } to{ opacity:1; transform:scaleY(-1) } }
+@keyframes markInBR{ from{ opacity:0; transform:scale(-1,-1) scale(.82) } to{ opacity:1; transform:scale(-1,-1) } }
+
+/* 편지봉투 : 다 나타난 뒤 아주 천천히 위아래로 떠 있는다 */
+.js .letter-icon.in{ animation:floaty 5s ease-in-out 2.9s infinite; }
+@keyframes floaty{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-7px) } }
+
+/* 스크롤 안내 : 실선이 위에서 아래로 흘러내린다 */
+.scroll-hint{
+  position:absolute;
+  left:0; right:0;
+  bottom:clamp(22px,6.5vw,32px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  pointer-events:none;
+}
+.scroll-hint .sh-label{
+  font-size:7.5px;
+  letter-spacing:.34em;
+  text-indent:.34em;
+  opacity:.42;
+}
+.scroll-hint .sh-line{
+  width:1px; height:32px;
+  background:linear-gradient(var(--ink-soft), rgba(45,60,205,0));
+  transform-origin:top;
+}
+.js .scroll-hint.in .sh-line{ animation:shDrop 2.4s ease-in-out 1s infinite; }
+@keyframes shDrop{
+  0%   { transform:scaleY(.15); opacity:.15 }
+  45%  { transform:scaleY(1);   opacity:.9  }
+  100% { transform:scaleY(1);   opacity:0   }
+}
 
 /* 라인아트는 선이 그려지듯 (길이는 JS에서 도형별로 계산) */
 .js .draw path, .js .draw ellipse, .js .draw circle{
@@ -412,6 +520,11 @@ body{
   }
   .js .wipe{
     -webkit-mask-position:0 50%; mask-position:0 50%; transition:none;
+  }
+  /* 1페이지 진입 연출도 끈다 (mark 는 좌우·상하 반전을 써야 하므로 transform 은 건드리지 않는다) */
+  .js .card--gift, .js .card--gift .mark,
+  .js .letter-icon.in, .js .scroll-hint.in .sh-line{
+    animation:none !important; opacity:1;
   }
   html{ scroll-behavior:auto; }
 }
@@ -504,6 +617,7 @@ section { padding-bottom: 100px !important; }
 
 /* ── 지도 ────────────────────────────────────────── */
 .map{
+  position:relative;
   width:100%;
   max-width:340px;
   max-height: 200px;
@@ -513,6 +627,33 @@ section { padding-bottom: 100px !important; }
   background:var(--ivory-deep);
 }
 .map iframe{ width:100%; height:100%; border:0; display:block; filter:grayscale(.35) contrast(.96); }
+/* 카카오 지도가 그려지는 자리 */
+#kakaoMap{ width:100%; height:100%; filter:grayscale(.28) contrast(.97); }
+/* 앱키가 없거나 지도를 못 불러올 때 대신 보여줄 안내 */
+.map-fallback{
+  display:none;
+  position:absolute; inset:0;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:11px;
+  padding:16px;
+  text-align:center;
+  font-family:var(--kr);
+  font-size:11px;
+  font-weight:300;
+  line-height:1.7;
+  opacity:.72;
+}
+.map-fallback.on{ display:flex; }
+.map-fallback a{
+  font-size:10.5px;
+  color:var(--ink);
+  text-decoration:none;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:7px 14px;
+}
 .place{
   margin-top:clamp(14px,4vw,18px);
   text-align:center;
@@ -707,18 +848,37 @@ section { padding-bottom: 100px !important; }
     <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
     <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
 
-    <p class="gift-line wipe d1">Here begins forever</p>
-    <svg class="gift-names arc wipe d2" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
+    <!-- 진입 순서는 각 요소의 transition-delay 로 조절한다 (리본 0.2s ~ 스크롤 안내 2.7s) -->
+    <p class="gift-line wipe" style="transition-delay:.55s">Here begins forever</p>
+    <svg class="gift-names arc wipe" style="transition-delay:1s" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
       <defs><path id="arcGift" d="M14 100 Q200 26 386 100" fill="none"/></defs>
       <text text-anchor="middle"><textPath href="#arcGift" startOffset="50%">Jiwon &amp; Jeonghun</textPath></text>
     </svg>
 
     <!-- 편지봉투 -->
-    <img class="letter-icon reveal" src="./icon/letter.png" alt="편지 봉투">
+    <img class="letter-icon reveal" style="transition-delay:1.5s" src="./icon/letter.png" alt="편지 봉투">
 
-    <button class="gift-btn wipe d3" type="button" aria-expanded="false" aria-controls="giftPanel">add to gift</button>
+    <!-- <button class="gift-btn wipe d3" type="button" aria-expanded="false" aria-controls="giftPanel">add to gift</button> -->
+
+    <!-- 이름 · 날짜 · 장소 : 세 줄이 차례로 올라온다 -->
+    <div class="intro">
+      <p class="intro-names reveal" style="transition-delay:1.9s">황지원<span class="amp">·</span>최정훈</p>
+      <span class="intro-rule reveal" style="transition-delay:2.05s"></span>
+      <p class="intro-date reveal" style="transition-delay:2.15s">2026년 11월 14일 토요일<span class="dot">·</span>오후 1시 50분</p>
+      <p class="intro-place reveal" style="transition-delay:2.3s">
+        상주 마리앙스 웨딩컨벤션
+        <span class="hall">마리앙스홀</span>
+      </p>
+    </div>
+
+    <!-- 스크롤 안내 -->
+    <div class="scroll-hint reveal" style="transition-delay:2.7s">
+      <span class="sh-label">SCROLL</span>
+      <span class="sh-line"></span>
+    </div>
 
     <div class="gift-panel" id="giftPanel">
+      <span>2026.11.14(토) 경상북도 상주시 마리앙스 웨딩컨벤션</span>
       <div>
         <div class="acct">
           <span class="who">GROOM</span>
@@ -762,8 +922,10 @@ section { padding-bottom: 100px !important; }
         <span class="cd-unit"><b data-cd="h">--</b><span>HOURS</span></span>
         <span class="cd-sep">:</span>
         <span class="cd-unit"><b data-cd="m">--</b><span>MINUTES</span></span>
+        <span class="cd-sep">:</span>
+        <span class="cd-unit"><b data-cd="s">--</b><span>SECONDS</span></span>
       </div>
-      <p class="cd-kr">우리의 결혼식까지</p>
+      <p class="cd-kr">우리의 결혼식까지 <b data-cd="dtext">--</b>일 남았습니다.</p>
     </div>
 
     <!-- 큐피드 -->
@@ -832,11 +994,13 @@ section { padding-bottom: 100px !important; }
     <p class="sec-title wipe">Where</p>
     <p class="sec-label wipe d1">LOCATION</p>
 
+    <!-- 카카오맵 (아래 스크립트의 KAKAO_APP_KEY 에 JavaScript 키를 넣어야 표시된다) -->
     <div class="map reveal d1" style="margin-top:clamp(18px,5vw,24px)">
-      <iframe
-        src="https://maps.google.com/maps?q=%EA%B2%BD%EB%B6%81%20%EC%83%81%EC%A3%BC%EC%8B%9C%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4%20%EC%9B%A8%EB%94%A9&amp;z=15&amp;hl=ko&amp;output=embed"
-        loading="lazy" referrerpolicy="no-referrer-when-downgrade"
-        title="마리앙스 웨딩컨벤션 위치"></iframe>
+      <div id="kakaoMap" aria-label="마리앙스 웨딩컨벤션 위치"></div>
+      <div class="map-fallback" id="mapFallback">
+        <span>경상북도 상주시 삼백로 343<br>마리앙스 웨딩컨벤션</span>
+        <a href="https://map.kakao.com/?q=%EC%83%81%EC%A3%BC%20%EB%A7%88%EB%A6%AC%EC%95%99%EC%8A%A4" target="_blank" rel="noopener">카카오맵에서 보기</a>
+      </div>
     </div>
 
     <p class="place reveal d2">
@@ -950,15 +1114,29 @@ var io = new IntersectionObserver(function(entries){
     if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); }
   });
 }, { threshold:.18, rootMargin:'0px 0px -8% 0px' });
-document.querySelectorAll('.reveal, .wipe').forEach(function(el){ io.observe(el); });
+/* 1페이지는 스크롤 없이 처음부터 보이는 화면이라 관찰을 기다리지 않고 바로 시작한다.
+   (특히 스크롤 안내처럼 화면 맨 아래 붙은 요소는 rootMargin -8% 때문에 관찰이 늦게 걸린다) */
+var firstCard = document.querySelector('.card--gift');
+document.querySelectorAll('.reveal, .wipe').forEach(function(el){
+  if(firstCard && firstCard.contains(el)){
+    requestAnimationFrame(function(){
+      requestAnimationFrame(function(){ el.classList.add('in'); });
+    });
+  }else{
+    io.observe(el);
+  }
+});
 
 /* add to gift 토글 */
 var btn   = document.querySelector('.gift-btn');
 var panel = document.getElementById('giftPanel');
-btn.addEventListener('click', function(){
-  var open = panel.classList.toggle('open');
-  btn.setAttribute('aria-expanded', open);
-});
+/* 버튼을 주석 처리해두면 btn 이 null 이라 아래 스크립트 전체가 멈춘다 → 있을 때만 연결 */
+if(btn && panel){
+  btn.addEventListener('click', function(){
+    var open = panel.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open);
+  });
+}
 
 /* 계좌 복사 */
 document.querySelectorAll('.copy').forEach(function(b){
@@ -989,7 +1167,9 @@ document.querySelectorAll('.copy').forEach(function(b){
   var out = {
     d: cd.querySelector('[data-cd="d"]'),
     h: cd.querySelector('[data-cd="h"]'),
-    m: cd.querySelector('[data-cd="m"]')
+    m: cd.querySelector('[data-cd="m"]'),
+    s: cd.querySelector('[data-cd="s"]'),
+    dtext: cd.querySelector('[data-cd="dtext"]')   /* "…까지 nn일 남았습니다" 의 숫자 */
   };
   var label = cd.querySelector('.cd-label');
   var krLine = cd.querySelector('.cd-kr');
@@ -1007,10 +1187,13 @@ document.querySelectorAll('.copy').forEach(function(b){
       return;
     }
 
-    var mins = Math.floor(diff / 60000);
-    out.d.textContent = Math.floor(mins / 1440);
-    out.h.textContent = pad(Math.floor((mins % 1440) / 60));
-    out.m.textContent = pad(mins % 60);
+    var secs = Math.floor(diff / 1000);
+    var days = Math.floor(secs / 86400);
+    out.d.textContent = days;
+    out.h.textContent = pad(Math.floor((secs % 86400) / 3600));
+    out.m.textContent = pad(Math.floor((secs % 3600) / 60));
+    out.s.textContent = pad(secs % 60);
+    out.dtext.textContent = days;
   }
 
   tick();
@@ -1020,6 +1203,45 @@ document.querySelectorAll('.copy').forEach(function(b){
 /* ── 갤러리 : image/gallery/01.jpg ~ 10.jpg 를 자동으로 불러온다 ──
    사진 수를 바꾸려면 GALLERY_COUNT 만 고치면 된다 */
 var GALLERY_COUNT = 9;
+
+/* ── 카카오맵 ──────────────────────────────────────────────
+   1) https://developers.kakao.com > 내 애플리케이션 > 앱 키 > "JavaScript 키" 복사
+   2) 같은 화면의 [플랫폼 > Web] 에 이 청첩장이 올라갈 도메인을 등록
+      (예: https://내아이디.github.io) — 등록하지 않으면 지도가 뜨지 않는다
+   3) 아래 KAKAO_APP_KEY 에 붙여넣기
+   키가 비어 있거나 로딩에 실패하면 주소 + 카카오맵 링크가 대신 표시된다 */
+var KAKAO_APP_KEY = '0ecec0f1529ce019d44a9de3e0b3bb22';                              /* ← JavaScript 키 */
+var WEDDING_ADDR  = '경상북도 상주시 삼백로 343';    /* 지도 중심이 될 주소 */
+
+(function(){
+  var box = document.getElementById('kakaoMap');
+  var fb  = document.getElementById('mapFallback');
+  if(!box || !fb) return;
+
+  function showFallback(){ box.style.display = 'none'; fb.classList.add('on'); }
+  if(!KAKAO_APP_KEY){ showFallback(); return; }
+
+  var s = document.createElement('script');
+  s.src = 'https://dapi.kakao.com/v2/maps/sdk.js?autoload=false&libraries=services&appkey=' + KAKAO_APP_KEY;
+  s.onerror = showFallback;
+  s.onload = function(){
+    kakao.maps.load(function(){
+      var map = new kakao.maps.Map(box, {
+        center: new kakao.maps.LatLng(36.4152, 128.1590),   /* 주소 검색 전 임시 중심 (상주 시내) */
+        level : 4
+      });
+      map.setZoomable(false);   /* 페이지 스크롤 중에 지도가 확대/축소되지 않도록 */
+
+      new kakao.maps.services.Geocoder().addressSearch(WEDDING_ADDR, function(res, status){
+        if(status !== kakao.maps.services.Status.OK || !res.length) return;
+        var pos = new kakao.maps.LatLng(res[0].y, res[0].x);
+        map.setCenter(pos);
+        new kakao.maps.Marker({ map:map, position:pos });
+      });
+    });
+  };
+  document.head.appendChild(s);
+})();
 var PHOTO_HOLDER = 'data:image/svg+xml;utf8,'
   + '%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 118%22%3E'
   + '%3Crect width=%22100%22 height=%22118%22 fill=%22%23EFE9DC%22/%3E'
