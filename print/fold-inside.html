@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>fold-inside</title>
+<!-- ============================================================
+     2단 반접지 — 안쪽면 (펼쳤을 때 보이는 쪽)
+
+     펼침 210x140mm + 도련 3mm = 216x146mm / 300DPI = 2551x1724 px
+
+       ┌───────────────────┐
+       │      ( 달력 )       │  ← 위 절반
+       ├───────────────────┤  ← 접는 선
+       │  ( 장소 · 두 사람 )  │  ← 아래 절반
+       └───────────────────┘
+
+     펼치면 위에서 아래로 이어 읽으므로 회전 없이 그대로 앉힌다.
+     담는 정보는 달력 · 장소 · 주소 · 두 사람 이름까지만.
+
+     ?only=... : bg / ribbon / text / guide
+     ============================================================ -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+@font-face{ font-family:'Festigan'; src:url('../font/Festigan.otf') format('opentype'); }
+
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  --bleed: 35.43px;
+  --ink:   #2030d0;
+  --faint: rgba(45,60,205,.18);
+  --kr: 'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+}
+
+body{ width:2551px; height:1724px; overflow:hidden; }
+
+.sheet{
+  position:relative;
+  width:2551px;
+  height:1724px;
+  color:var(--ink);
+  background:#F7F3EA;
+  background-image:
+    radial-gradient(120% 60% at 50% 0%,   rgba(255,255,255,.65) 0%, rgba(255,255,255,0) 60%),
+    radial-gradient(100% 50% at 50% 100%, rgba(0,0,0,.025) 0%, rgba(0,0,0,0) 60%);
+  font-family:var(--kr);
+}
+
+.panel{
+  position:absolute;
+  left:0; right:0;
+  height:862px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+/* 위/아래 여백 : 바깥쪽은 안전선(도련+5mm)을 넘도록 넉넉히, 접는 선 쪽은 조금만 */
+.panel.top{    top:0;    padding:100px 0 50px; }
+.panel.bottom{ bottom:0; padding:50px 0 100px; }
+
+body[data-only] [data-layer]{ visibility:hidden; }
+body[data-only="bg"]     [data-layer="bg"],
+body[data-only="ribbon"] [data-layer="ribbon"],
+body[data-only="text"]   [data-layer="text"],
+body[data-only="guide"]  [data-layer="guide"]{ visibility:visible; }
+body[data-only]:not([data-only="bg"]) .sheet{ background:none; }
+
+/* 리본은 펼친 시트의 네 모서리에 (패널이 아니라 시트 기준) */
+.mark{ position:absolute; width:132px; height:132px; color:var(--ink); }
+.mark svg{ width:100%; height:100%; display:block; overflow:visible; }
+.mark.tl{ top:104px;    left:104px; }
+.mark.tr{ top:104px;    right:104px;  transform:scaleX(-1); }
+.mark.bl{ bottom:104px; left:104px;   transform:scaleY(-1); }
+.mark.br{ bottom:104px; right:104px;  transform:scale(-1,-1); }
+
+/* ── 달력 (위 절반) ───────────────────────────────── */
+.sec-title{
+  font-family:'Festigan',cursive;
+  font-size:58px;
+  line-height:1.1;
+  text-align:center;
+  margin-bottom:30px;
+}
+.cal{ width:1180px; }
+.cal-month{
+  text-align:center;
+  font-size:26px;
+  letter-spacing:.30em;
+  text-indent:.30em;
+  font-weight:400;
+  margin-bottom:24px;
+}
+.cal-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  row-gap:10px;
+  text-align:center;
+}
+.cal-grid .dow{
+  font-size:20px;
+  letter-spacing:.14em;
+  opacity:.5;
+  padding-bottom:14px;
+  border-bottom:2px solid var(--faint);
+  margin-bottom:14px;
+}
+.cal-grid .d{ font-size:28px; font-weight:300; line-height:52px; height:52px; }
+.cal-grid .d.sun{ opacity:.55; }
+.cal-grid .d.on{
+  width:52px;
+  margin:0 auto;
+  color:#F7F3EA;
+  font-weight:400;
+  background:var(--ink);
+  border-radius:50%;
+}
+.cal-note{
+  margin-top:26px;
+  text-align:center;
+  font-size:31px;
+  font-weight:300;
+  letter-spacing:.02em;
+}
+.cal-note strong{ font-weight:500; }
+
+/* ── 장소 · 두 사람 (아래 절반) ───────────────────── */
+/* 아래 절반은 담을 내용이 적어, 펼쳤을 때 위(달력)에 눌리지 않도록 조금 크게 잡는다 */
+.sec-rule{ width:86px; height:2px; background:var(--faint); margin:40px 0; }
+
+.place{ text-align:center; font-size:40px; font-weight:500; letter-spacing:.01em; }
+.place .addr{
+  display:block;
+  margin-top:18px;
+  font-size:30px;
+  font-weight:400;
+  opacity:.7;
+  line-height:1.7;
+}
+.names{
+  text-align:center;
+  font-size:52px;
+  font-weight:400;
+  letter-spacing:.16em;
+  text-indent:.16em;
+  line-height:1.4;
+}
+.names .amp{ opacity:.4; margin:0 10px; letter-spacing:-3px; font-weight:300; }
+
+.guide{ display:none; position:absolute; inset:0; pointer-events:none; }
+body[data-only="guide"] .guide{ display:block; }
+.guide i{ position:absolute; display:block; }
+.guide .trim{ inset:var(--bleed); border:1px dashed rgba(255,0,0,.85); }
+.guide .safe{ inset:calc(var(--bleed) + 59px); border:1px dashed rgba(0,150,255,.7); }
+.guide .fold{ left:0; right:0; top:862px; border-top:2px dashed rgba(0,160,60,.8); }
+</style>
+</head>
+<body>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <g id="ribbon-corner" fill="none" stroke="currentColor" stroke-width="1.8"
+       stroke-linecap="round" stroke-linejoin="round">
+      <path d="M22 22 C16.8 13.6 15.6 4.2 20.6 3 C26.2 1.8 26.8 11.4 22 22"/>
+      <path d="M22 22 C13.6 27.2 4.2 28.2 3 23.2 C1.8 17.8 11.4 17.2 22 22"/>
+      <path d="M22 22 C31 18.6 37 24 46 20.6 C55 17.2 61 22 71 18.2"/>
+      <path d="M22 22 C26 30 19 36 21 44.6 C23 53.2 16 58 18.6 71"/>
+    </g>
+  </defs>
+</svg>
+
+<div class="sheet">
+
+  <span class="mark tl" data-layer="ribbon"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+  <span class="mark tr" data-layer="ribbon"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+  <span class="mark bl" data-layer="ribbon"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+  <span class="mark br" data-layer="ribbon"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+
+  <!-- ══ 위 절반 : 달력 ══ -->
+  <div class="panel top">
+    <div data-layer="text" style="display:contents">
+      <p class="sec-title">The Day</p>
+      <div class="cal">
+        <p class="cal-month">NOVEMBER 2026</p>
+        <div class="cal-grid">
+          <span class="dow">SUN</span><span class="dow">MON</span><span class="dow">TUE</span>
+          <span class="dow">WED</span><span class="dow">THU</span><span class="dow">FRI</span>
+          <span class="dow">SAT</span>
+
+          <span class="d sun">1</span><span class="d">2</span><span class="d">3</span>
+          <span class="d">4</span><span class="d">5</span><span class="d">6</span><span class="d">7</span>
+
+          <span class="d sun">8</span><span class="d">9</span><span class="d">10</span>
+          <span class="d">11</span><span class="d">12</span><span class="d">13</span>
+          <span class="d on">14</span>
+
+          <span class="d sun">15</span><span class="d">16</span><span class="d">17</span>
+          <span class="d">18</span><span class="d">19</span><span class="d">20</span><span class="d">21</span>
+
+          <span class="d sun">22</span><span class="d">23</span><span class="d">24</span>
+          <span class="d">25</span><span class="d">26</span><span class="d">27</span><span class="d">28</span>
+
+          <span class="d sun">29</span><span class="d">30</span>
+        </div>
+        <p class="cal-note">2026년 11월 14일 토요일 <strong>오후 1시 50분</strong></p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ 아래 절반 : 장소 · 두 사람 ══ -->
+  <div class="panel bottom">
+    <div data-layer="text" style="display:contents">
+      <p class="place">
+        마리앙스 웨딩컨벤션 마리앙스홀
+        <span class="addr">경상북도 상주시 삼백로 343</span>
+      </p>
+      <span class="sec-rule"></span>
+      <p class="names">황지원<span class="amp">·</span>최정훈</p>
+    </div>
+  </div>
+
+  <div class="guide" data-layer="guide">
+    <i class="trim"></i>
+    <i class="safe"></i>
+    <i class="fold"></i>
+  </div>
+
+</div>
+
+<script>
+var only = new URLSearchParams(location.search).get('only');
+if(only) document.body.setAttribute('data-only', only);
+</script>
+</body>
+</html>

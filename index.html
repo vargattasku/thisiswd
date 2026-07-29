@@ -1542,20 +1542,22 @@ if(galleryEl && lb){
     }, 1600);
   }
 
-  cBtn.addEventListener('click', function(){
+  function copyUrl(msg){
     function legacy(){
       var ta = document.createElement('textarea');
       ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
       document.body.appendChild(ta); ta.select();
-      try{ document.execCommand('copy'); flashCopy('복사되었습니다'); }catch(err){}
+      try{ document.execCommand('copy'); flashCopy(msg); }catch(err){}
       document.body.removeChild(ta);
     }
     if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(url).then(function(){ flashCopy('복사되었습니다'); }, legacy);
+      navigator.clipboard.writeText(url).then(function(){ flashCopy(msg); }, legacy);
     }else{
       legacy();
     }
-  });
+  }
+
+  cBtn.addEventListener('click', function(){ copyUrl('복사되었습니다'); });
 
   /* 카카오톡 공유 */
   if(!KAKAO_APP_KEY){ kBtn.style.display = 'none'; return; }
@@ -1573,16 +1575,23 @@ if(galleryEl && lb){
       return;
     }
     kBtn.addEventListener('click', function(){
-      Kakao.Share.sendDefault({
-        objectType:'feed',
-        content:{
-          title:'황지원 · 최정훈 결혼합니다',
-          description:'2026년 11월 14일 토요일 오후 1시 50분\n상주 마리앙스 웨딩컨벤션',
-          imageUrl: SITE + 'image/og-card.png',   /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
-          link:{ mobileWebUrl:url, webUrl:url }
-        },
-        buttons:[{ title:'청첩장 보기', link:{ mobileWebUrl:url, webUrl:url } }]
-      });
+      try{
+        Kakao.Share.sendDefault({
+          objectType:'feed',
+          content:{
+            title:'황지원 · 최정훈 결혼합니다',
+            description:'2026년 11월 14일 토요일 오후 1시 50분\n상주 마리앙스 웨딩컨벤션',
+            imageUrl: url + 'image/og-card.png',    /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
+            link:{ mobileWebUrl:url, webUrl:url }
+          },
+          buttons:[{ title:'청첩장 보기', link:{ mobileWebUrl:url, webUrl:url } }]
+        });
+      }catch(err){
+        /* 도메인 미등록·카카오톡 공유 OFF 등으로 실패하면
+           아무 일도 안 일어난 것처럼 보이지 않도록 링크 복사로 대신한다 */
+        console.warn('카카오톡 공유 실패 :', err);
+        copyUrl('링크가 복사되었습니다');
+      }
     });
   };
   document.head.appendChild(s);
@@ -1599,24 +1608,96 @@ if(galleryEl && lb){
   var btn   = document.getElementById('bgmBtn');
   if(!audio || !btn) return;
 
-  audio.volume = 0.45;          /* 청첩장이므로 조용하게 */
+  var VOL       = 0.45;   /* 청첩장이므로 조용하게 */
+  var FADE_IN   = 3.0;    /* 곡 도입부가 서서히 차오르는 시간 (초) */
+  var FADE_OUT  = 4.0;    /* 곡이 끝나기 전 서서히 잦아드는 시간 */
+  var FADE_WAKE = 1.2;    /* 다시 틀거나 음소거를 풀 때의 짧은 페이드인 */
+
+  audio.volume = 0;             /* 첫 소리는 0 에서 시작해 rAF 로 끌어올린다 */
   var stoppedByUser = false;    /* 직접 끈 뒤에는 마음대로 다시 켜지 않는다 */
+  var wakeAt = 0;               /* 재생/음소거 해제 시점의 재생 위치 */
 
   /* 음원을 못 읽으면 버튼째 감춘다 */
   audio.addEventListener('error', function(){ btn.style.display = 'none'; });
 
+  /* ── 소리 크기 조절 통로 ──────────────────────────────
+     iOS 사파리는 audio.volume 을 무시하므로(기기 볼륨만 따른다)
+     페이드가 먹히도록 Web Audio 의 GainNode 를 거쳐 내보낸다.
+     AudioContext 는 사용자 동작 전에는 잠들어 있어, 첫 동작에서 깨운다. */
+  var ctx = null, gainNode = null, curGain = 0;
+  try{
+    var AC = window.AudioContext || window.webkitAudioContext;
+    /* file:// 로 열면 음원이 cross-origin 으로 취급돼 Web Audio 로는 소리가 나지 않는다.
+       그때는 그냥 audio.volume 을 쓴다 (로컬에서 미리 볼 때만 해당) */
+    if(AC && location.protocol !== 'file:'){
+      ctx = new AC();
+      gainNode = ctx.createGain();
+      gainNode.gain.value = 0;
+      ctx.createMediaElementSource(audio).connect(gainNode);
+      gainNode.connect(ctx.destination);
+    }
+  }catch(e){ ctx = null; gainNode = null; }
+
+  function setGain(v){
+    curGain = v;
+    if(gainNode) gainNode.gain.value = v;
+    else audio.volume = v;      /* Web Audio 를 못 쓰는 환경 */
+  }
+
+  /* ── 볼륨 페이드 : 매 프레임 지금 있어야 할 크기를 계산해 넣는다 ──
+     loop 로 곡이 처음으로 돌아가면 currentTime 도 0 이 되므로
+     끝의 fade out 에 이어 도입부 fade in 이 자연스럽게 다시 걸린다 */
+  var fadingOut = false;        /* 끄는 중에는 아래 계산이 볼륨을 되돌리지 않게 한다 */
+  function fade(){
+    if(!audio.paused && !fadingOut){
+      var t = audio.currentTime;
+      var d = audio.duration || 0;
+      if(t < wakeAt) wakeAt = 0;            /* 곡이 한 바퀴 돌았다 */
+
+      var g = 1;
+      if(t < FADE_IN) g = t / FADE_IN;                                   /* 도입부 */
+      if(d && d - t < FADE_OUT) g = Math.min(g, (d - t) / FADE_OUT);     /* 마무리 */
+      var since = t - wakeAt;
+      if(since < FADE_WAKE) g = Math.min(g, since / FADE_WAKE);          /* 다시 켤 때 */
+
+      setGain(VOL * Math.max(0, Math.min(1, g)));
+    }
+    requestAnimationFrame(fade);
+  }
+  requestAnimationFrame(fade);
+
   /* 실제로 "소리가 나고 있는" 상태일 때만 일시정지 아이콘을 보여준다
      (음소거 자동재생 중에는 아직 ▶ 로 둔다) */
   function sync(){
-    var sounding = !audio.paused && !audio.muted;
+    /* 끄는 중(페이드아웃)이면 아이콘은 기다리지 않고 바로 ▶ 로 돌린다.
+       볼륨은 fade() 가 매 프레임 건드리므로 volumechange 로는 갱신하지 않는다 */
+    var sounding = !audio.paused && !audio.muted && !stoppedByUser
+                   && (!ctx || ctx.state === 'running');
     btn.classList.toggle('on', sounding);
     btn.setAttribute('aria-pressed', sounding ? 'true' : 'false');
   }
-  ['play','pause','volumechange'].forEach(function(t){ audio.addEventListener(t, sync); });
+  ['play','pause'].forEach(function(t){ audio.addEventListener(t, sync); });
+  if(ctx) ctx.addEventListener('statechange', sync);
+
+  /* 재생이 (다시) 시작될 때마다 그 지점을 페이드인 기준으로 잡는다 */
+  audio.addEventListener('play', function(){ fadingOut = false; wakeAt = audio.currentTime; });
 
   function play(){
     var p = audio.play();
     return (p && p.catch) ? p : { catch: function(){ return this; } };
+  }
+
+  /* 버튼으로 끌 때는 뚝 끊지 않고 0.6초에 걸쳐 잦아들게 한다 */
+  function fadeOutAndPause(){
+    var from = curGain, t0 = null;
+    fadingOut = true;
+    requestAnimationFrame(function step(ts){
+      if(t0 === null) t0 = ts;
+      var k = (ts - t0) / 600;
+      if(k >= 1 || audio.paused){ audio.pause(); setGain(0); fadingOut = false; return; }
+      setGain(from * (1 - k));
+      requestAnimationFrame(step);
+    });
   }
 
   /* 1) + 2) : 열자마자 즉시 재생 */
@@ -1629,9 +1710,10 @@ if(galleryEl && lb){
   var EVENTS = ['pointerdown','touchstart','keydown','scroll'];
   function kick(){
     if(stoppedByUser) return;
-    audio.muted = false;
+    if(ctx && ctx.state === 'suspended'){ ctx.resume(); wakeAt = audio.currentTime; }
+    if(audio.muted){ audio.muted = false; wakeAt = audio.currentTime; }  /* 소리는 여기서부터 차오른다 */
     if(audio.paused) play().catch(function(){});
-    if(!audio.paused && !audio.muted){
+    if(!audio.paused && !audio.muted && (!ctx || ctx.state === 'running')){
       EVENTS.forEach(function(t){ window.removeEventListener(t, kick); });
     }
     sync();
@@ -1641,17 +1723,23 @@ if(galleryEl && lb){
   /* 다른 탭·앱으로 나가면 멈추고, 돌아오면 (직접 끈 게 아니라면) 이어서 튼다 */
   document.addEventListener('visibilitychange', function(){
     if(document.hidden){ audio.pause(); }
-    else if(!stoppedByUser){ play().catch(function(){}); }
+    else if(!stoppedByUser){
+      if(ctx && ctx.state === 'suspended') ctx.resume();
+      play().catch(function(){});
+    }
   });
 
   btn.addEventListener('click', function(){
-    if(audio.paused || audio.muted){
+    if(audio.paused || audio.muted || (ctx && ctx.state === 'suspended')){
       stoppedByUser = false;
+      fadingOut = false;
       audio.muted = false;
+      if(ctx && ctx.state === 'suspended') ctx.resume();
+      wakeAt = audio.currentTime;
       play().catch(function(){});
     }else{
       stoppedByUser = true;
-      audio.pause();
+      fadeOutAndPause();
     }
     sync();
   });

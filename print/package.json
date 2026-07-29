@@ -1,0 +1,13 @@
+{
+  "name": "wd-postcard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "청첩장 엽서(A6) 인쇄용 JPG/PSD 생성",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "dependencies": {
+    "ag-psd": "^24.0.0",
+    "pngjs": "^7.0.0"
+  }
+}
