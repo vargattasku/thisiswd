@@ -386,7 +386,7 @@ body{
   font-weight:400;
   letter-spacing:.05em;
   line-height:1.85;
-  opacity:.8 !important;
+  opacity:.8;   /* !important 를 붙이면 .reveal 의 페이드인(0→1)까지 눌러버린다 */
 }
 .intro-date .dot{ opacity:.35; margin:0 5px; }
 .intro-place{
@@ -394,7 +394,7 @@ body{
   font-size:clamp(10.5px,3vw,13px);
   font-weight:400;
   letter-spacing:.03em;
-  opacity:.8 !important;
+  opacity:.8;   /* 위와 같은 이유로 !important 를 쓰지 않는다 */
 }
 .intro-place .hall{ display:block; font-size:.92em; opacity:.85; font-weight: 400; }
 
@@ -499,6 +499,14 @@ body{
 }
 .js .card--gift .reveal.in{ transform:translate3d(0,0,0); }
 
+/* 날짜·장소는 다 나타난 뒤에도 옅게(.8) 남아야 한다.
+   .js .reveal.in 의 opacity:1 을 이기려면 선택자를 한 단계 더 좁혀야 하고,
+   그렇다고 .intro-date 쪽에 !important 를 붙이면 시작값 0 까지 눌려 페이드인이 사라진다 */
+.js .card--gift .intro-date,
+.js .card--gift .intro-place{ opacity:0; }
+.js .card--gift .intro-date.in,
+.js .card--gift .intro-place.in{ opacity:.8; }
+
 /* 네 모서리 리본 : 살짝 작은 상태에서 제자리로.
    코너마다 기본 transform(좌우·상하 반전)이 달라 keyframes 를 따로 둔다 */
 .js .card--gift .mark{ animation:1.3s cubic-bezier(.22,.61,.36,1) both; will-change:opacity, transform; }
@@ -567,6 +575,8 @@ body{
   .js .card--gift .reveal, .js .card--gift .wipe{
     opacity:1 !important; transform:none !important; transition:none !important;
   }
+  /* 다만 날짜·장소의 옅은 농도는 연출이 아니라 디자인이므로 그대로 남긴다 */
+  .js .card--gift .intro-date, .js .card--gift .intro-place{ opacity:.8 !important; }
   html{ scroll-behavior:auto; }
 }
 
@@ -848,6 +858,38 @@ section { padding-bottom: 100px !important; }
 .bank-row:last-child{ border-bottom:1px solid var(--ink-faint); }
 .bank-row .who{ opacity:.6; font-size:10.5px; white-space:nowrap; font-weight: 500 !important; }
 .bank-row .no{ flex:1; text-align:left; padding-left:12px; }
+
+/* ── 공유하기 (맨 아래) ──────────────────────────── */
+.share{
+  width:100%;
+  max-width:340px;
+  /* 바로 위 .contact 가 margin-bottom:-50px 로 당겨져 있어 그만큼 얹어준다 */
+  margin-top:clamp(74px,18vw,92px);
+  display:flex;
+  gap:8px;
+}
+.sh-btn{
+  flex:1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  font-family:var(--kr);
+  font-size:11.5px;
+  font-weight:400;
+  letter-spacing:.02em;
+  color:var(--ink);
+  background:none;
+  border:1px solid var(--ink-faint);
+  border-radius:999px;
+  padding:12px 8px;
+  cursor:pointer;
+  white-space:nowrap;
+  transition:background .2s, color .2s, border-color .2s;
+}
+.sh-btn:hover{ background:rgba(45,60,205,.06); }
+.sh-btn svg{ width:15px; height:15px; display:block; flex-shrink:0; }
+.sh-btn.done{ background:var(--ink); color:var(--ivory); border-color:var(--ink); }
 </style>
 <script>document.documentElement.className='js';</script>
 </head>
@@ -1117,6 +1159,24 @@ section { padding-bottom: 100px !important; }
     <p class="contact wipe" style="margin-top:clamp(34px,9vw,46px)">
       thank you for celebrating with us
     </p>
+
+    <!-- 공유하기 : 카카오 SDK 를 못 불러오면 카카오 버튼은 감춰지고 URL 복사만 남는다 -->
+    <div class="share reveal" id="share">
+      <button class="sh-btn sh-kakao" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true">
+          <path fill="currentColor" d="M12 3.2C6.9 3.2 2.8 6.4 2.8 10.4c0 2.6 1.7 4.8 4.3 6.1-.2.7-.7 2.5-.8 2.9-.1.5.2.5.4.4.2-.1 2.6-1.7 3.7-2.4.5.1 1.1.1 1.6.1 5.1 0 9.2-3.2 9.2-7.1S17.1 3.2 12 3.2z"/>
+        </svg>
+        <span>카카오톡 공유</span>
+      </button>
+      <button class="sh-btn sh-copy" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+             stroke-linecap="round" aria-hidden="true">
+          <path d="M10.2 13.8a3.7 3.7 0 0 0 5.2 0l2.4-2.4a3.7 3.7 0 0 0-5.2-5.2l-1.1 1.1"/>
+          <path d="M13.8 10.2a3.7 3.7 0 0 0-5.2 0l-2.4 2.4a3.7 3.7 0 0 0 5.2 5.2l1.1-1.1"/>
+        </svg>
+        <span>URL 복사</span>
+      </button>
+    </div>
   </section>
 
 </main>
@@ -1346,112 +1406,84 @@ if(galleryEl && lb){
   });
 }
 
-/* ── 페이지 소프트 스냅 ─────────────────────────────────────
-   스크롤이 멈춘 자리가 페이지 경계 근처면 그 페이지 머리로 부드럽게 끌어당긴다.
-   CSS 의 scroll-snap-type:mandatory 는 쓰지 않는다 — 3·4페이지처럼 화면보다 긴 섹션에서
-   중간(달력·지도·갤러리)을 읽으려 할 때마다 튕겨나가기 때문.
-   그래서 "경계에서 PULL 범위 안에 멈췄을 때만" 붙는 반자동 방식으로 둔다.
-   ─ 감도 조절 : PULL(끌어당기는 범위) / IDLE(멈춤 판정 시간) / 아래 dur(이동 속도) */
+/* ── 공유하기 ──────────────────────────────────────────────
+   카카오톡 공유는 지도와 다른 SDK 를 쓴다 (앱키는 위 KAKAO_APP_KEY 와 같은 JavaScript 키).
+   ※ https://developers.kakao.com 내 애플리케이션에서
+     1) [제품 설정 > 카카오톡 공유] 를 ON
+     2) [플랫폼 > Web] 에 이 청첩장 도메인을 등록
+     두 가지를 해두지 않으면 버튼을 눌러도 창이 뜨지 않는다.
+   SDK 를 못 불러오면 카카오 버튼은 감추고 URL 복사만 남긴다 */
 (function(){
-  if(reduceMotion) return;                  /* 모션 최소화 설정이면 손대지 않는다 */
+  var box = document.getElementById('share');
+  if(!box) return;
 
-  var sections = [].slice.call(document.querySelectorAll('.page > .card'));
-  if(sections.length < 2) return;
+  var kBtn = box.querySelector('.sh-kakao');
+  var cBtn = box.querySelector('.sh-copy');
 
-  var docEl = document.documentElement;
-  var IDLE = 140;    /* 스크롤이 이만큼(ms) 조용하면 멈춘 것으로 본다 */
-  var PULL = 0.32;   /* 화면 높이의 32% 안쪽으로 가까운 경계에만 붙는다 */
-  var MIN  = 8;      /* 이보다 가까우면 이미 맞은 것으로 보고 무시 */
+  /* 공유할 주소 : 실제로 열려 있는 주소를 쓰되,
+     로컬에서 file:// 로 열어본 경우에는 배포 주소를 대신 넣는다 */
+  var SITE = 'https://vargattasku.github.io/thisiswd/';
+  var url  = /^https?:$/.test(location.protocol) ? location.origin + location.pathname : SITE;
 
-  var idleTimer = null;
-  var anim      = null;    /* 진행 중인 스냅 이동 : {id, at} */
-  var touching  = false;
-  var lastY     = window.scrollY || window.pageYOffset;
-  var dir       = 1;       /* 마지막 스크롤 방향 (아래 +1 / 위 -1) */
+  /* URL 복사 : 계좌 복사(.copy)와 같은 방식 */
+  var copyLabel = cBtn.querySelector('span').textContent;
+  var copyTimer = null;
 
-  function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }  /* easeInOutCubic */
-
-  function cancel(){
-    if(!anim) return;
-    cancelAnimationFrame(anim.id);
-    anim = null;
-    docEl.style.scrollBehavior = '';
+  function flashCopy(msg){
+    var t = cBtn.querySelector('span');
+    clearTimeout(copyTimer);
+    t.textContent = msg;
+    cBtn.classList.add('done');
+    copyTimer = setTimeout(function(){
+      t.textContent = copyLabel;
+      cBtn.classList.remove('done');
+    }, 1600);
   }
 
-  function glide(to){
-    var from = window.scrollY || window.pageYOffset;
-    var dist = to - from;
-    if(Math.abs(dist) < MIN) return;
-
-    /* CSS 의 html{scroll-behavior:smooth} 가 매 프레임 scrollTo 를 한 번 더 보간해
-       이동이 늘어지고 어긋나므로, 스냅 동안만 꺼둔다 */
-    docEl.style.scrollBehavior = 'auto';
-
-    var dur = Math.min(760, Math.max(340, Math.abs(dist) * 1.1));
-    var t0  = performance.now();
-    anim = { id:0, at:t0 };
-
-    (function step(now){
-      var p = Math.min(1, (now - t0) / dur);
-      window.scrollTo(0, from + dist * ease(p));
-      lastY = window.scrollY || window.pageYOffset;
-      if(p < 1){ anim.id = requestAnimationFrame(step); }
-      else { anim = null; docEl.style.scrollBehavior = ''; }
-    })(t0);
-  }
-
-  function snap(){
-    if(touching || anim) return;
-    if(lb && lb.classList.contains('open')) return;        /* 사진 확대 중에는 쉰다 */
-
-    var y   = window.scrollY || window.pageYOffset;
-    var max = docEl.scrollHeight - window.innerHeight;
-    if(y <= 1 || y >= max - 1) return;                     /* 문서 맨 위/맨 아래는 그대로 */
-
-    var limit = window.innerHeight * PULL;
-    var best  = null, bestScore = Infinity;
-
-    sections.forEach(function(s){
-      var top = s.getBoundingClientRect().top + y;         /* 문서 기준 섹션 머리 위치 */
-      var d   = top - y;
-      if(Math.abs(d) > limit) return;
-      /* 방금 스크롤하던 방향 쪽 경계를 조금 더 우대해서, 넘기려던 페이지로 자연스럽게 이어지게 */
-      var score = Math.abs(d) * ((d === 0 || (d > 0) === (dir > 0)) ? .72 : 1);
-      if(score < bestScore){ bestScore = score; best = top; }
-    });
-
-    if(best !== null) glide(Math.max(0, Math.min(max, best)));
-  }
-
-  function schedule(){
-    clearTimeout(idleTimer);
-    if(touching) return;                                   /* 손가락이 닿아 있는 동안은 대기 */
-    idleTimer = setTimeout(snap, IDLE);
-  }
-
-  window.addEventListener('scroll', function(){
-    var y = window.scrollY || window.pageYOffset;
-    if(!anim){                                             /* 스냅이 만든 스크롤은 방향 판정에서 제외 */
-      if(y !== lastY) dir = y > lastY ? 1 : -1;
-      lastY = y;
-      schedule();
+  cBtn.addEventListener('click', function(){
+    function legacy(){
+      var ta = document.createElement('textarea');
+      ta.value = url; ta.style.position='fixed'; ta.style.opacity='0';
+      document.body.appendChild(ta); ta.select();
+      try{ document.execCommand('copy'); flashCopy('복사되었습니다'); }catch(err){}
+      document.body.removeChild(ta);
     }
-  }, { passive:true });
+    if(navigator.clipboard && window.isSecureContext){
+      navigator.clipboard.writeText(url).then(function(){ flashCopy('복사되었습니다'); }, legacy);
+    }else{
+      legacy();
+    }
+  });
 
-  /* 사용자가 다시 움직이면 스냅은 즉시 양보한다.
-     (스냅 시작 직후 남아 있던 관성 wheel 이벤트로 취소되지 않게 80ms 는 봐준다) */
-  window.addEventListener('wheel', function(){
-    if(anim && performance.now() - anim.at > 80) cancel();
-  }, { passive:true });
-  window.addEventListener('touchstart', function(){
-    touching = true; cancel(); clearTimeout(idleTimer);
-  }, { passive:true });
-  window.addEventListener('touchend', function(){
-    touching = false; schedule();
-  }, { passive:true });
-  window.addEventListener('keydown',   cancel);
-  window.addEventListener('mousedown', cancel);
-  window.addEventListener('resize',    cancel);
+  /* 카카오톡 공유 */
+  if(!KAKAO_APP_KEY){ kBtn.style.display = 'none'; return; }
+
+  var s = document.createElement('script');
+  s.src = 'https://t1.kakaocdn.net/kakao_js_sdk/2.7.5/kakao.min.js';
+  s.integrity = 'sha384-dok87au0gKqJdxs7msEdBPNnKSRT+/mhTVzq+qOhcL464zXwvcrpjeWvyj1kCdq6';
+  s.crossOrigin = 'anonymous';
+  s.onerror = function(){ kBtn.style.display = 'none'; };
+  s.onload = function(){
+    try{
+      if(!Kakao.isInitialized()) Kakao.init(KAKAO_APP_KEY);
+    }catch(e){
+      kBtn.style.display = 'none';
+      return;
+    }
+    kBtn.addEventListener('click', function(){
+      Kakao.Share.sendDefault({
+        objectType:'feed',
+        content:{
+          title:'황지원 · 최정훈 결혼합니다',
+          description:'2026년 11월 14일 토요일 오후 1시 50분\n상주 마리앙스 웨딩컨벤션',
+          imageUrl: SITE + 'image/og-card.png',   /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
+          link:{ mobileWebUrl:url, webUrl:url }
+        },
+        buttons:[{ title:'청첩장 보기', link:{ mobileWebUrl:url, webUrl:url } }]
+      });
+    });
+  };
+  document.head.appendChild(s);
 })();
 </script>
 </body>

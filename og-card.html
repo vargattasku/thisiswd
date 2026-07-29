@@ -10,11 +10,21 @@
      "C:\Program Files\Google\Chrome\Application\chrome.exe" ^
        --headless=new --disable-gpu --hide-scrollbars ^
        --force-device-scale-factor=2 --window-size=1200,630 ^
+       --virtual-time-budget=6000 ^
        --screenshot="image\og-card.png" og-card.html
 
+     ※ --virtual-time-budget 은 반드시 넣는다. 한글(Noto Sans KR)은 구글 폰트에서
+       내려받고 사진도 불러와야 하는데, 이 옵션이 없으면 도착하기 전에 찍혀서
+       한글이 기본 고딕으로, 사진이 빈 칸으로 남은 카드가 만들어진다.
      ※ 카카오톡은 한 번 읽은 미리보기를 캐시한다. 이미지를 바꾼 뒤에는
        https://developers.kakao.com/tool/debugger/sharing 에서 캐시를 지워야 반영된다.
      ============================================================ -->
+
+<!-- 한글은 본문(index.html)과 같은 Noto Sans KR 을 쓴다 -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+
 <style>
 @font-face{ font-family:'Brittany Signature'; src:url('./font/BrittanySignature.ttf') format('truetype'); }
 @font-face{ font-family:'Festigan';           src:url('./font/Festigan.otf')          format('opentype'); }
@@ -30,7 +40,8 @@ body{
   background-image:
     radial-gradient(120% 70% at 50% 0%,   rgba(255,255,255,.7) 0%, rgba(255,255,255,0) 62%),
     radial-gradient(100% 55% at 50% 100%, rgba(0,0,0,.03) 0%, rgba(0,0,0,0) 62%);
-  font-family:'Jost','Malgun Gothic',sans-serif;
+  /* index.html 의 --sans 와 같은 구성 : 영문 Jost, Jost 에 없는 한글은 Noto Sans KR 로 떨어진다 */
+  font-family:'Jost','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   font-weight:300;
   display:flex;
   flex-direction:column;
@@ -46,32 +57,67 @@ body{
 .mark.bl{ bottom:34px; left:38px;   transform:scaleY(-1); }
 .mark.br{ bottom:34px; right:38px;  transform:scale(-1,-1); }
 
+/* 자간은 index.html 과 같은 비율이 되도록 px 대신 em 으로 적는다.
+   (본문 gift-line 은 20px 에 -1px = -.05em) */
 .line{
   font-family:'Festigan',cursive;
-  font-size:38px;
+  font-size:25px;
   font-weight:200;
-  letter-spacing:-1px;
-  margin-bottom:-26px;
+  letter-spacing:-.05em;
+  margin-bottom:-20px;
 }
 
-/* 이름 아치 : 본문 1페이지와 같은 곡선(M14 106 Q200 -10 386 106) */
-.arc{ width:660px; height:auto; overflow:visible; display:block; }
-.arc text{ fill:currentColor; font-family:'Brittany Signature',cursive; font-size:47px; letter-spacing:5px; }
+/* 이름 아치 : 본문 1페이지와 같은 곡선(M14 106 Q200 -10 386 106).
+   글자 크기(47)·자간(4)은 viewBox 400 기준 값이라 본문과 같게 두고,
+   svg 자체의 폭만 줄여서 카드 안에서 작게 보이게 한다 */
+.arc{ width:470px; height:auto; overflow:visible; display:block; margin-bottom: -20px; }
+.arc text{
+  fill:currentColor;
+  font-family:'Brittany Signature',cursive;
+  font-size:40px;
+  font-weight:600;      /* 본문 .gift-names 와 같은 굵기 */
+  letter-spacing:8px;
+}
 
-.rule{ width:44px; height:1px; background:rgba(45,60,205,.28); margin:34px 0 30px; }
+/* 타원 사진 : 본문 2페이지 .photo 와 같은 비율·보정 */
+.photo{
+  /* 아치 svg 는 viewBox(400x118) 아래쪽이 비어 있어 그대로 두면 이름과 사진이 벌어진다.
+     그 빈 높이만큼 음수 마진으로 당겨 본문 2페이지와 비슷한 간격을 만든다 */
+  margin-top:-12px;
+  width:400px;
+  aspect-ratio:1.5/1;
+  border-radius:50%;
+  overflow:hidden;
+  background:#F1ECE0;
+  flex-shrink:0;        /* 세로 630px 안에서 눌려 찌그러지지 않도록 */
+}
+.photo img{
+  width:100%; height:120%;
+  object-fit:cover;
+  object-position:center 80%;   /* 세로 원본에서 인물이 가운데 오도록 */
+  display:block;
+  filter:grayscale(1) contrast(1.04);
+}
 
+.rule{ width:44px; height:1px; background:rgba(45,60,205,.28); margin:24px 0 20px; }
+
+/* 날짜·장소는 본문 .intro-date / .intro-place 와 같은 서체·자간·농도 */
 .date{
-  font-size:22px;
-  letter-spacing:.13em;
-  text-indent:.16em;
-  font-weight:500;
-}
-.place{
-  margin-top:20px;
-  font-family:'Malgun Gothic','Noto Sans KR',sans-serif;
-  font-size:19px;
+  font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:21px;
   font-weight:400;
-  opacity:.62;
+  letter-spacing:.05em;
+  line-height:1.85;
+  opacity:.6;
+}
+.date .dot{ opacity:.35; margin:0 .42em; }   /* 본문의 12px 기준 5px 를 비율로 옮긴 값 */
+.place{
+  margin-top:14px;
+  font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  font-size:18px;
+  font-weight:400;
+  letter-spacing:.03em;
+  opacity:.6;
 }
 </style>
 </head>
@@ -101,9 +147,14 @@ body{
   <text text-anchor="middle"><textPath href="#arcOg" startOffset="52%">jiwon<tspan dx="-2.5">&amp;</tspan><tspan dx="-2.5">jeonghun</tspan></textPath></text>
 </svg>
 
+<!-- 타원 사진 : 본문 2페이지와 같은 image/wd-web.jpg -->
+<figure class="photo">
+  <img src="./image/wd-web.jpg" alt="">
+</figure>
+
 <span class="rule"></span>
 
-<p class="date">2026년 11월 14일 토요일 &nbsp;·&nbsp; 오후 1:50</p>
+<p class="date">2026년 11월 14일 토요일<span class="dot">·</span>오후 1시 50분</p>
 <p class="place">상주 마리앙스 웨딩컨벤션</p>
 
 </body>
