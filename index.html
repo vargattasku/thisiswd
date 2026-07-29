@@ -358,7 +358,7 @@ body{
   overflow:visible;
 }
 .arc text{ fill:currentColor;     letter-spacing: 4px; }
-.gift-names.arc text{ font-size:47px; }   /* viewBox(400) 기준 단위 */
+.gift-names.arc text{ font-size:40px; }   /* viewBox(400) 기준 단위 */
 .names.arc text    { font-size:35px; }
 /* ── 1페이지 : 이름 · 날짜 · 장소 블록 ──────────── */
 .intro{
@@ -368,7 +368,7 @@ body{
   color:var(--ink);
 }
 .intro-names{
-  font-size:clamp(15px,4.4vw,17px);
+  font-size:clamp(15px,4.4vw,15px);
   font-weight:400;
   letter-spacing:.16em;
   text-indent:.16em;   /* letter-spacing 때문에 오른쪽으로 밀리는 만큼 보정 */
@@ -382,19 +382,19 @@ body{
   margin:clamp(13px,3.8vw,17px) auto;
 }
 .intro-date{
-  font-size:clamp(11.5px,3.3vw,12px);
+  font-size:clamp(11.5px,3.3vw,13px);
   font-weight:400;
   letter-spacing:.05em;
   line-height:1.85;
-  opacity:.6;
+  opacity:.8 !important;
 }
 .intro-date .dot{ opacity:.35; margin:0 5px; }
 .intro-place{
   margin-top:7px;
-  font-size:clamp(10.5px,3vw,12px);
+  font-size:clamp(10.5px,3vw,13px);
   font-weight:400;
   letter-spacing:.03em;
-  opacity:.6;
+  opacity:.8 !important;
 }
 .intro-place .hall{ display:block; font-size:.92em; opacity:.85; font-weight: 400; }
 
@@ -590,7 +590,7 @@ section { padding-bottom: 100px !important; }
 .sec-title{
   font-family:var(--Festigan);
   font-size:clamp(30px,9vw,38px);
-  line-height:1.1;
+  letter-spacing: -1.5px;
   text-align:center;
 }
 .sec-label{
@@ -833,7 +833,7 @@ section { padding-bottom: 100px !important; }
 /* 계좌 (4페이지) : 1페이지 .acct 스타일을 한글용으로 다듬음 */
 .banks{ width:100%; max-width:340px; }
 .bank-side{ margin-top:clamp(16px,4.5vw,22px); }
-.bank-side .ct-role{ text-align:left; margin-bottom:8px; }
+.bank-side .ct-role{ text-align:center; margin-bottom:8px; }
 .bank-row{
   display:flex;
   align-items:center;
@@ -913,7 +913,7 @@ section { padding-bottom: 100px !important; }
       <span class="intro-rule reveal" style="transition-delay:2.05s"></span>
       <p class="intro-date reveal" style="transition-delay:2.15s">2026년 11월 14일 토요일<span class="dot">·</span>오후 1시 50분</p>
       <p class="intro-place reveal" style="transition-delay:2.3s">
-        상주 마리앙스 웨딩컨벤션 마리앙스홀
+        상주 마리앙스 웨딩컨벤션
       </p>
     </div>
 
@@ -1034,9 +1034,9 @@ section { padding-bottom: 100px !important; }
     </div>
 
     <p class="place reveal d2">
-      마리앙스 웨딩컨벤션
+      상주 마리앙스 웨딩컨벤션
       <!-- ▼ 정확한 도로명주소와 층/홀 이름을 여기에 적어주세요 -->
-      <span class="addr">경상북도 상주시 삼백로 343 마리앙스홀</span>
+      <span class="addr">경상북도 상주시 삼백로 343</span>
     </p>
 
     <div class="map-links reveal d3">
@@ -1069,13 +1069,14 @@ section { padding-bottom: 100px !important; }
     <div class="contacts reveal d1" style="margin-top:clamp(20px,5.5vw,26px)">
       <div class="ct-side">
         <span class="ct-role">GROOM · 신랑측</span>
-        <div class="ct-row"><span class="who">신랑</span><span class="nm">최정훈</span><a href="tel:01053268044">전화</a></div>
+        <div class="ct-row"><span class="who">신랑</span><span class="nm">&nbsp;&nbsp;&nbsp;최정훈</span><a href="tel:01053268044">전화</a></div>
         <div class="ct-row"><span class="who">아버지</span><span class="nm">김○○</span><a href="tel:01000000000">전화</a></div>
         <div class="ct-row"><span class="who">어머니</span><span class="nm">이○○</span><a href="tel:01000000000">전화</a></div>
       </div>
       <div class="ct-side">
         <span class="ct-role">BRIDE · 신부측</span>
-        <div class="ct-row"><span class="who">신부</span><span class="nm">황지원</span><a href="tel:01023152568">전화</a></div>
+        <div class="ct-row"><span class="who">신부</span><span class="nm">&nbsp;&nbsp;&nbsp;황지원</span><a href="tel:01023152568">전화</a></div>
+        <div class="ct-row"><span class="who">아버지</span><span class="nm">故 황문호</span></div>
       </div>
     </div>
 
@@ -1094,6 +1095,11 @@ section { padding-bottom: 100px !important; }
         </div>
         <div class="bank-row">
           <span class="who">아버지</span>
+          <span class="no" data-acct="농협 302-0000-0000-00">농협 302-0000-0000-00</span>
+          <button class="copy" type="button">COPY</button>
+        </div>
+        <div class="bank-row">
+          <span class="who">어머니</span>
           <span class="no" data-acct="농협 302-0000-0000-00">농협 302-0000-0000-00</span>
           <button class="copy" type="button">COPY</button>
         </div>
@@ -1339,6 +1345,114 @@ if(galleryEl && lb){
     if(e.key === 'ArrowRight') lbOpen(lbIndex + 1);
   });
 }
+
+/* ── 페이지 소프트 스냅 ─────────────────────────────────────
+   스크롤이 멈춘 자리가 페이지 경계 근처면 그 페이지 머리로 부드럽게 끌어당긴다.
+   CSS 의 scroll-snap-type:mandatory 는 쓰지 않는다 — 3·4페이지처럼 화면보다 긴 섹션에서
+   중간(달력·지도·갤러리)을 읽으려 할 때마다 튕겨나가기 때문.
+   그래서 "경계에서 PULL 범위 안에 멈췄을 때만" 붙는 반자동 방식으로 둔다.
+   ─ 감도 조절 : PULL(끌어당기는 범위) / IDLE(멈춤 판정 시간) / 아래 dur(이동 속도) */
+(function(){
+  if(reduceMotion) return;                  /* 모션 최소화 설정이면 손대지 않는다 */
+
+  var sections = [].slice.call(document.querySelectorAll('.page > .card'));
+  if(sections.length < 2) return;
+
+  var docEl = document.documentElement;
+  var IDLE = 140;    /* 스크롤이 이만큼(ms) 조용하면 멈춘 것으로 본다 */
+  var PULL = 0.32;   /* 화면 높이의 32% 안쪽으로 가까운 경계에만 붙는다 */
+  var MIN  = 8;      /* 이보다 가까우면 이미 맞은 것으로 보고 무시 */
+
+  var idleTimer = null;
+  var anim      = null;    /* 진행 중인 스냅 이동 : {id, at} */
+  var touching  = false;
+  var lastY     = window.scrollY || window.pageYOffset;
+  var dir       = 1;       /* 마지막 스크롤 방향 (아래 +1 / 위 -1) */
+
+  function ease(t){ return t < .5 ? 4*t*t*t : 1 - Math.pow(-2*t + 2, 3) / 2; }  /* easeInOutCubic */
+
+  function cancel(){
+    if(!anim) return;
+    cancelAnimationFrame(anim.id);
+    anim = null;
+    docEl.style.scrollBehavior = '';
+  }
+
+  function glide(to){
+    var from = window.scrollY || window.pageYOffset;
+    var dist = to - from;
+    if(Math.abs(dist) < MIN) return;
+
+    /* CSS 의 html{scroll-behavior:smooth} 가 매 프레임 scrollTo 를 한 번 더 보간해
+       이동이 늘어지고 어긋나므로, 스냅 동안만 꺼둔다 */
+    docEl.style.scrollBehavior = 'auto';
+
+    var dur = Math.min(760, Math.max(340, Math.abs(dist) * 1.1));
+    var t0  = performance.now();
+    anim = { id:0, at:t0 };
+
+    (function step(now){
+      var p = Math.min(1, (now - t0) / dur);
+      window.scrollTo(0, from + dist * ease(p));
+      lastY = window.scrollY || window.pageYOffset;
+      if(p < 1){ anim.id = requestAnimationFrame(step); }
+      else { anim = null; docEl.style.scrollBehavior = ''; }
+    })(t0);
+  }
+
+  function snap(){
+    if(touching || anim) return;
+    if(lb && lb.classList.contains('open')) return;        /* 사진 확대 중에는 쉰다 */
+
+    var y   = window.scrollY || window.pageYOffset;
+    var max = docEl.scrollHeight - window.innerHeight;
+    if(y <= 1 || y >= max - 1) return;                     /* 문서 맨 위/맨 아래는 그대로 */
+
+    var limit = window.innerHeight * PULL;
+    var best  = null, bestScore = Infinity;
+
+    sections.forEach(function(s){
+      var top = s.getBoundingClientRect().top + y;         /* 문서 기준 섹션 머리 위치 */
+      var d   = top - y;
+      if(Math.abs(d) > limit) return;
+      /* 방금 스크롤하던 방향 쪽 경계를 조금 더 우대해서, 넘기려던 페이지로 자연스럽게 이어지게 */
+      var score = Math.abs(d) * ((d === 0 || (d > 0) === (dir > 0)) ? .72 : 1);
+      if(score < bestScore){ bestScore = score; best = top; }
+    });
+
+    if(best !== null) glide(Math.max(0, Math.min(max, best)));
+  }
+
+  function schedule(){
+    clearTimeout(idleTimer);
+    if(touching) return;                                   /* 손가락이 닿아 있는 동안은 대기 */
+    idleTimer = setTimeout(snap, IDLE);
+  }
+
+  window.addEventListener('scroll', function(){
+    var y = window.scrollY || window.pageYOffset;
+    if(!anim){                                             /* 스냅이 만든 스크롤은 방향 판정에서 제외 */
+      if(y !== lastY) dir = y > lastY ? 1 : -1;
+      lastY = y;
+      schedule();
+    }
+  }, { passive:true });
+
+  /* 사용자가 다시 움직이면 스냅은 즉시 양보한다.
+     (스냅 시작 직후 남아 있던 관성 wheel 이벤트로 취소되지 않게 80ms 는 봐준다) */
+  window.addEventListener('wheel', function(){
+    if(anim && performance.now() - anim.at > 80) cancel();
+  }, { passive:true });
+  window.addEventListener('touchstart', function(){
+    touching = true; cancel(); clearTimeout(idleTimer);
+  }, { passive:true });
+  window.addEventListener('touchend', function(){
+    touching = false; schedule();
+  }, { passive:true });
+  window.addEventListener('keydown',   cancel);
+  window.addEventListener('mousedown', cancel);
+  window.addEventListener('resize',    cancel);
+})();
 </script>
 </body>
 </html>
