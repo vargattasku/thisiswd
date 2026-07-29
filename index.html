@@ -1433,10 +1433,7 @@ if(galleryEl && lb){
   var kBtn = box.querySelector('.sh-kakao');
   var cBtn = box.querySelector('.sh-copy');
 
-  /* 공유할 주소 : 실제로 열려 있는 주소를 쓰되,
-     로컬에서 file:// 로 열어본 경우에는 배포 주소를 대신 넣는다 */
-  var SITE = 'https://vargattasku.github.io/thisiswd/';
-  var url  = /^https?:$/.test(location.protocol) ? location.origin + location.pathname : SITE;
+  var url  = 'https://vargattasku.github.io/thisiswd/';
 
   /* URL 복사 : 계좌 복사(.copy)와 같은 방식 */
   var copyLabel = cBtn.querySelector('span').textContent;
@@ -1488,7 +1485,7 @@ if(galleryEl && lb){
         objectType:'feed',
         content:{
           title:'황지원 · 최정훈 결혼합니다',
-          description:'2026.11.14(토) 오후 1:50\n상주 마리앙스 웨딩컨벤션',
+          description:'2026년 11월 14일 토요일 오후 1시 50분\n상주 마리앙스 웨딩컨벤션',
           imageUrl: SITE + 'image/og-card.png',   /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
           link:{ mobileWebUrl:url, webUrl:url }
         },
