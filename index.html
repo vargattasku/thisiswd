@@ -572,9 +572,12 @@ body{
   }
   /* 1페이지 진입 연출도 끈다 (mark 는 좌우·상하 반전을 써야 하므로 transform 은 건드리지 않는다) */
   .js .card--gift .mark,
-  .js .letter-icon.in, .js .scroll-hint.in .sh-line{
+  .js .letter-icon.in, .js .scroll-hint.in .sh-line,
+  .js .cupid.in .cupid-img{
     animation:none !important; opacity:1;
   }
+  /* 하트는 기본 opacity 가 0 이므로 애니메이션만 끄면 그대로 사라진다 */
+  .js .cupid.in .hb{ animation:none !important; }
   /* 1페이지용 규칙이 위 .js .reveal / .js .wipe 보다 선택자가 강하므로 여기서 다시 눌러준다 */
   .js .card--gift .reveal, .js .card--gift .wipe{
     opacity:1 !important; transform:none !important; transition:none !important;
@@ -591,6 +594,44 @@ body{
     max-width: 100%;
     margin-bottom: clamp(14px,4vw,20px);
 }
+
+/* ── 큐피드 : 작은 하트가 하나씩 떠올랐다 사라진다 ─────────── */
+.cupid{
+  position:relative;
+  display:inline-block;
+  margin:20px 0;
+  line-height:0;
+}
+.cupid-img{ height:110px; width:auto; display:block; }
+.cupid .hearts{
+  position:absolute;
+  inset:0;
+  pointer-events:none;   /* 하트가 터치를 가로채지 않게 */
+}
+.cupid .hb{
+  position:absolute;
+  fill:var(--ink);
+  opacity:0;             /* 애니메이션 없이는 보이지 않는다 */
+  will-change:transform, opacity;
+}
+.js .cupid.in .hb{ animation:heartShoot 5s ease-out infinite; }
+/* 화살촉이 그림의 오른쪽 위(가로 84% · 세로 34% 지점)를 향하므로,
+   하트도 그 앞에서 태어나 화살이 날아가는 방향(오른쪽 위)으로 흘려보낸다.
+   --dx / --dy 로 하트마다 비행 거리를 조금씩 달리해 궤적을 흩뜨린다 */
+.cupid .hb1{ left:86%; top:30%; width:9px;  height:9px;  --dx:40px; --dy:-19px; animation-delay:.3s;  }
+.cupid .hb2{ left:82%; top:39%; width:7px;  height:7px;  --dx:31px; --dy:-12px; animation-delay:1.4s; }
+.cupid .hb3{ left:90%; top:34%; width:11px; height:11px; --dx:46px; --dy:-23px; animation-delay:2.3s; }
+.cupid .hb4{ left:84%; top:25%; width:8px;  height:8px;  --dx:35px; --dy:-25px; animation-delay:3.2s; }
+.cupid .hb5{ left:88%; top:43%; width:6px;  height:6px;  --dx:27px; --dy:-10px; animation-delay:4.1s; }
+@keyframes heartShoot{
+  0%   { opacity:0;   transform:translate3d(0,0,0) scale(.5) }
+  16%  { opacity:.42; transform:translate3d(calc(var(--dx)*.2),  calc(var(--dy)*.2),  0) scale(1) }
+  60%  { opacity:.26; transform:translate3d(calc(var(--dx)*.62), calc(var(--dy)*.62), 0) scale(.92) }
+  100% { opacity:0;   transform:translate3d(var(--dx), var(--dy), 0) scale(.62) }
+}
+/* 큐피드 자체도 아주 얕게 떠 있는다 (편지봉투 floaty 보다 폭을 줄였다) */
+.js .cupid.in .cupid-img{ animation:cupidFloat 5s ease-in-out infinite; }
+@keyframes cupidFloat{ 0%,100%{ transform:translateY(0) } 50%{ transform:translateY(-4px) } }
 
 section { padding-bottom: 100px !important; }
 /* ═══════════════════════════════════════════════════════════
@@ -828,7 +869,8 @@ section { padding-bottom: 100px !important; }
   font-size:12px;
   font-weight:300;
 }
-.ct-row .who{ opacity:.62; font-size:11px; font-weight: 500 !important; }
+/* who 폭을 3글자로 고정해, 신랑/아버지/어머니 오른쪽의 이름 시작점을 세로로 일렬 정렬 */
+.ct-row .who{ opacity:.62; font-size:11px; font-weight: 500 !important; flex:0 0 auto; width:3em; }
 .ct-row .nm{ flex:1; text-align:left; padding-left:12px; font-weight:400; }
 .ct-row a{
   color:var(--ink);
@@ -859,7 +901,8 @@ section { padding-bottom: 100px !important; }
   font-weight:300;
 }
 .bank-row:last-child{ border-bottom:1px solid var(--ink-faint); }
-.bank-row .who{ opacity:.6; font-size:10.5px; white-space:nowrap; font-weight: 500 !important; }
+/* 위 .ct-row 와 동일하게 who 폭을 고정 → 계좌번호(숫자) 시작점이 세로로 일렬 */
+.bank-row .who{ opacity:.6; font-size:10.5px; white-space:nowrap; font-weight: 500 !important; flex:0 0 auto; width:3em; }
 .bank-row .no{ flex:1; text-align:left; padding-left:12px; }
 /* 카톡 인앱 브라우저처럼 위 <meta format-detection> 을 무시하고
    계좌번호에 링크를 걸어버리는 곳까지 대비해, 링크 모양을 아예 지운다 */
@@ -902,6 +945,34 @@ section { padding-bottom: 100px !important; }
 .sh-btn:hover{ background:rgba(45,60,205,.06); }
 .sh-btn svg{ width:15px; height:15px; display:block; flex-shrink:0; }
 .sh-btn.done{ background:var(--ink); color:var(--ivory); border-color:var(--ink); }
+
+/* ── 배경음악 토글 (페이지와 무관하게 항상 우측 상단에 떠 있다)
+   반투명이라 코너 리본과 겹쳐도 서로 비쳐 보인다 ─────────── */
+.bgm-btn{
+  position:fixed;
+  top:calc(env(safe-area-inset-top) + 14px);
+  /* 카드(.page)는 화면 가운데 최대 430px 이므로, 그 오른쪽 끝에 맞춘다 */
+  left:calc(50% + min(var(--page-w), 100vw) / 2 - 14px);
+  transform:translateX(-100%);
+  z-index:40;                      /* 사진 확대(라이트박스 50) 중에는 그 뒤로 가려진다 */
+  width:30px; height:30px;
+  display:flex; align-items:center; justify-content:center;
+  padding:0;
+  color:var(--ink);
+  background:rgba(247,243,234,.5);
+  border:1px solid rgba(45,60,205,.42);
+  border-radius:999px;
+  opacity:.68;                     /* 살짝 비치는 정도 */
+  cursor:pointer;
+  transition:opacity .25s, background .25s;
+}
+.bgm-btn:hover{ opacity:1; background:rgba(247,243,234,.8); }
+.bgm-btn svg{ width:11px; height:11px; display:block; }
+.bgm-btn .ico-play{ margin-left:1.5px; }   /* ▶ 는 무게중심이 왼쪽이라 살짝 밀어 원 가운데를 맞춘다 */
+/* 멈춰 있으면 ▶ , 재생 중이면 ❚❚ */
+.bgm-btn .ico-pause{ display:none; }
+.bgm-btn.on .ico-pause{ display:block; }
+.bgm-btn.on .ico-play{ display:none; }
 </style>
 <script>document.documentElement.className='js';</script>
 </head>
@@ -933,8 +1004,21 @@ section { padding-bottom: 100px !important; }
                C26 374 14 424 20 474 C26 526 15 578 21 630
                C27 682 15 726 21 762 C24 776 20 783 15 778"/>
     </g>
+
+    <!-- 큐피드 주변에 떠오르는 작은 하트 (fill 은 .cupid .hb 에서 지정) -->
+    <path id="heart-mini"
+          d="M12 21.1 10.6 19.8C5.5 15.2 2.1 12.1 2.1 8.3 2.1 5.3 4.5 2.9 7.5 2.9
+             c1.7 0 3.4.8 4.5 2.1 1.1-1.3 2.7-2.1 4.5-2.1 3 0 5.4 2.4 5.4 5.4
+             0 3.8-3.4 6.9-8.5 11.5L12 21.1z"/>
   </defs>
 </svg>
+
+<!-- 배경음악 : music/rest.m4a — 버튼은 스크롤과 무관하게 우측 상단에 떠 있다 -->
+<audio id="bgm" src="./music/rest.m4a" loop preload="auto" playsinline></audio>
+<button class="bgm-btn" id="bgmBtn" type="button" aria-label="배경음악 켜기 / 끄기" aria-pressed="false">
+  <svg class="ico-play"  viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7.5 4.6 19 12 7.5 19.4z"/></svg>
+  <svg class="ico-pause" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M7 4.8h3.4v14.4H7zm6.6 0H17v14.4h-3.4z"/></svg>
+</button>
 
 <main class="page">
 
@@ -1012,8 +1096,17 @@ section { padding-bottom: 100px !important; }
       <p class="cd-kr">우리의 결혼식까지 <b data-cd="dtext">--</b>일 남았습니다.</p>
     </div>
 
-    <!-- 큐피드 -->
-    <img src="./icon/cupid.png" style="height: 110px; margin: 20px 0 20px 0;">
+    <!-- 큐피드 : 화면에 들어오면 주변에서 작은 하트가 떠오른다 -->
+    <div class="cupid reveal d3">
+      <img src="./icon/cupid.png" class="cupid-img" alt="">
+      <span class="hearts" aria-hidden="true">
+        <svg class="hb hb1" viewBox="0 0 24 24"><use href="#heart-mini"/></svg>
+        <svg class="hb hb2" viewBox="0 0 24 24"><use href="#heart-mini"/></svg>
+        <svg class="hb hb3" viewBox="0 0 24 24"><use href="#heart-mini"/></svg>
+        <svg class="hb hb4" viewBox="0 0 24 24"><use href="#heart-mini"/></svg>
+        <svg class="hb hb5" viewBox="0 0 24 24"><use href="#heart-mini"/></svg>
+      </span>
+    </div>
 
     <!-- 사진 : image 폴더의 wd-web.jpg (원본 wd.jpg를 900px로 줄인 웹용) -->
     <figure class="photo reveal d4">
@@ -1123,13 +1216,13 @@ section { padding-bottom: 100px !important; }
     <div class="contacts reveal d1" style="margin-top:clamp(20px,5.5vw,26px)">
       <div class="ct-side">
         <span class="ct-role">GROOM · 신랑측</span>
-        <div class="ct-row"><span class="who">신랑</span><span class="nm">&nbsp;&nbsp;&nbsp;최정훈</span><a href="tel:01053268044">전화</a></div>
+        <div class="ct-row"><span class="who">신랑</span><span class="nm">최정훈</span><a href="tel:01053268044">전화</a></div>
         <div class="ct-row"><span class="who">아버지</span><span class="nm">김○○</span><a href="tel:01000000000">전화</a></div>
         <div class="ct-row"><span class="who">어머니</span><span class="nm">이○○</span><a href="tel:01000000000">전화</a></div>
       </div>
       <div class="ct-side">
         <span class="ct-role">BRIDE · 신부측</span>
-        <div class="ct-row"><span class="who">신부</span><span class="nm">&nbsp;&nbsp;&nbsp;황지원</span><a href="tel:01023152568">전화</a></div>
+        <div class="ct-row"><span class="who">신부</span><span class="nm">황지원</span><a href="tel:01023152568">전화</a></div>
         <div class="ct-row"><span class="who">아버지</span><span class="nm">故 황문호</span></div>
       </div>
     </div>
@@ -1493,6 +1586,77 @@ if(galleryEl && lb){
     });
   };
   document.head.appendChild(s);
+})();
+
+/* 배경음악 (music/rest.m4a)
+   브라우저는 "소리 있는" 자동재생만 막고 "음소거 재생"은 허용한다. 그래서
+   1) 페이지를 열자마자 소리를 켠 채 재생을 시도하고
+   2) 막히면 음소거 상태로라도 곧바로 재생을 시작해 둔 뒤
+   3) 사용자의 첫 동작(터치·클릭·스크롤·키입력) 순간 음소거만 풀어
+   곡이 처음부터 끊김 없이 이어지도록 한다. */
+(function(){
+  var audio = document.getElementById('bgm');
+  var btn   = document.getElementById('bgmBtn');
+  if(!audio || !btn) return;
+
+  audio.volume = 0.45;          /* 청첩장이므로 조용하게 */
+  var stoppedByUser = false;    /* 직접 끈 뒤에는 마음대로 다시 켜지 않는다 */
+
+  /* 음원을 못 읽으면 버튼째 감춘다 */
+  audio.addEventListener('error', function(){ btn.style.display = 'none'; });
+
+  /* 실제로 "소리가 나고 있는" 상태일 때만 일시정지 아이콘을 보여준다
+     (음소거 자동재생 중에는 아직 ▶ 로 둔다) */
+  function sync(){
+    var sounding = !audio.paused && !audio.muted;
+    btn.classList.toggle('on', sounding);
+    btn.setAttribute('aria-pressed', sounding ? 'true' : 'false');
+  }
+  ['play','pause','volumechange'].forEach(function(t){ audio.addEventListener(t, sync); });
+
+  function play(){
+    var p = audio.play();
+    return (p && p.catch) ? p : { catch: function(){ return this; } };
+  }
+
+  /* 1) + 2) : 열자마자 즉시 재생 */
+  play().catch(function(){
+    audio.muted = true;
+    play().catch(function(){ /* 이마저 막히면 첫 동작을 기다린다 */ });
+  });
+
+  /* 3) 첫 동작에 음소거를 푼다 */
+  var EVENTS = ['pointerdown','touchstart','keydown','scroll'];
+  function kick(){
+    if(stoppedByUser) return;
+    audio.muted = false;
+    if(audio.paused) play().catch(function(){});
+    if(!audio.paused && !audio.muted){
+      EVENTS.forEach(function(t){ window.removeEventListener(t, kick); });
+    }
+    sync();
+  }
+  EVENTS.forEach(function(t){ window.addEventListener(t, kick, {passive:true}); });
+
+  /* 다른 탭·앱으로 나가면 멈추고, 돌아오면 (직접 끈 게 아니라면) 이어서 튼다 */
+  document.addEventListener('visibilitychange', function(){
+    if(document.hidden){ audio.pause(); }
+    else if(!stoppedByUser){ play().catch(function(){}); }
+  });
+
+  btn.addEventListener('click', function(){
+    if(audio.paused || audio.muted){
+      stoppedByUser = false;
+      audio.muted = false;
+      play().catch(function(){});
+    }else{
+      stoppedByUser = true;
+      audio.pause();
+    }
+    sync();
+  });
+
+  sync();
 })();
 </script>
 </body>
