@@ -778,6 +778,7 @@ body{
   gap:8px;
   flex-wrap:wrap;
   justify-content:center;
+  margin-bottom: 20px;
 }
 .map-links a{
   font-family:var(--kr);
@@ -918,12 +919,12 @@ body{
   pointer-events:none;   /* 눌러도 전화걸기 창이 뜨지 않게 */
 }
 
-/* ── 공유하기 (맨 아래) ──────────────────────────── */
+/* ── 공유하기 ──────────────────────────── */
 .share{
   width:100%;
   max-width:340px;
-  /* 바로 위 .contact 가 margin-bottom:-50px 로 당겨져 있어 그만큼 얹어준다 */
-  margin-top:clamp(74px,18vw,92px);
+  margin-top:clamp(50px,18vw,50px);
+  margin-bottom: 30px;
   display:flex;
   gap:8px;
 }
@@ -1255,10 +1256,6 @@ body{
       </div>
     </div>
 
-    <p class="contact wipe" style="margin-top:clamp(34px,9vw,46px)">
-      thank you for celebrating with us
-    </p>
-
     <!-- 공유하기 : 카카오 SDK 를 못 불러오면 카카오 버튼은 감춰지고 URL 복사만 남는다 -->
     <div class="share reveal" id="share">
       <button class="sh-btn sh-kakao" type="button">
@@ -1276,6 +1273,11 @@ body{
         <span>URL 복사</span>
       </button>
     </div>
+
+    <p class="contact" style="margin-bottom: 20px;">
+      thank you for celebrating with us
+    </p>
+
   </section>
 
 </main>
