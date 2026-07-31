@@ -20,7 +20,7 @@
 <meta property="og:title"       content="황지원 · 최정훈 결혼합니다">
 <meta property="og:description" content="2026년 11월 14일 토요일 오후 2시 · 상주 마리앙스 웨딩컨벤션">
 <meta property="og:url"         content="https://vargattasku.github.io/thisiswd/">
-<meta property="og:image"       content="https://vargattasku.github.io/thisiswd/image/og-card-new2.png">
+<meta property="og:image"       content="https://vargattasku.github.io/thisiswd/image/og-card-new.png">
 <meta property="og:image:width"  content="2400">
 <meta property="og:image:height" content="1260">
 <meta property="og:image:alt"   content="jiwon &amp; jeonghun · 2026.11.14">
@@ -327,13 +327,24 @@ body{
   overflow:hidden;
   background:var(--ivory-deep);
 }
+/* 눌러서 크게 볼 수 있게 버튼으로 감쌌다. 타원 크기를 그대로 물려받아야
+   아래 img 의 height:120% 가 예전과 같은 크기로 계산된다 */
+.photo button{
+  display:block;
+  width:100%; height:100%;
+  padding:0; border:0;
+  background:none;
+  cursor:pointer;
+}
 .photo img{
   width:100%; height:120%;
   object-fit:cover;
   object-position:center 80%;   /* 세로 원본에서 인물이 가운데 오도록 */
   display:block;
   filter:grayscale(1) contrast(1.04);
+  transition:opacity .3s;
 }
+.photo button:hover img{ opacity:.82; }
 
 /* ── 6) 신랑신부 이름 ────────────────────────────── */
 .names{
@@ -834,14 +845,44 @@ body{
 .lightbox{
   position:fixed; inset:0;
   background:rgba(28,26,22,.92);
-  display:none;
+  display:flex;
   align-items:center;
   justify-content:center;
   z-index:50;
   padding:24px;
+  /* display 를 none↔flex 로 바꾸면 전환이 걸리지 않는다. 그래서 opacity 로 여닫고
+     visibility 로 닫힌 동안 눌리지 않게 막는다 (전환이 끝난 뒤에 숨도록 지연) */
+  opacity:0;
+  visibility:hidden;
+  transition:opacity .28s ease, visibility 0s linear .28s;
 }
-.lightbox.open{ display:flex; }
+.lightbox.open{
+  opacity:1;
+  visibility:visible;
+  transition:opacity .28s ease, visibility 0s;
+}
+
+/* 열릴 때 살짝 커지며 떠오른다 */
+.lb-stage{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  max-width:100%;
+  transform:scale(.94);
+  transition:transform .34s cubic-bezier(.2,.7,.3,1);
+}
+.lightbox.open .lb-stage{ transform:scale(1); }
+
+/* 좌우로 넘길 때의 transform/opacity 는 스크립트가 직접 넣는다.
+   (여는 확대는 .lb-stage 가 맡으므로 두 애니메이션이 서로 덮어쓰지 않는다) */
 .lightbox img{ max-width:100%; max-height:86vh; object-fit:contain; }
+
+/* 2페이지 대표 사진처럼 한 장만 띄울 때는 좌우 버튼을 감춘다 */
+.lightbox.single .lb-nav{ display:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .lightbox, .lb-stage, .lightbox img{ transition:none !important; }
+}
 .lightbox .lb-close{
   position:absolute; top:16px; right:18px;
   background:none; border:0; cursor:pointer;
@@ -1124,10 +1165,13 @@ body{
       </span>
     </div>
 
-    <!-- 사진 : image 폴더의 wd-web.jpg (원본 wd.jpg를 900px로 줄인 웹용) -->
+    <!-- 사진 : image 폴더의 wd-web.jpg (원본 wd.jpg를 900px로 줄인 웹용)
+         눌러서 갤러리와 같은 확대 보기로 띄운다 -->
     <figure class="photo reveal d4">
+      <button type="button" id="mainPhotoBtn" aria-label="사진 크게 보기">
       <img src="./image/wd-web.jpg" alt=""
            onerror="this.src='data:image/svg+xml;utf8,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 264 200%22%3E%3Crect width=%22264%22 height=%22200%22 fill=%22%23E9E3D6%22/%3E%3Ctext x=%22132%22 y=%22104%22 font-family=%22Helvetica%22 font-size=%2210%22 letter-spacing=%223%22 fill=%22%23A99F8B%22 text-anchor=%22middle%22%3EPHOTO%3C/text%3E%3C/svg%3E';this.onerror=null;">
+      </button>
     </figure>
     </div><!-- /.ribbon-frame -->
 
@@ -1298,7 +1342,7 @@ body{
 <div class="lightbox" id="lightbox" role="dialog" aria-modal="true" aria-label="사진 크게 보기">
   <button class="lb-close" type="button" aria-label="닫기">CLOSE</button>
   <button class="lb-nav lb-prev" type="button" aria-label="이전 사진">&#8249;</button>
-  <img src="" alt="">
+  <div class="lb-stage"><img src="" alt=""></div>
   <button class="lb-nav lb-next" type="button" aria-label="다음 사진">&#8250;</button>
 </div>
 
@@ -1507,22 +1551,126 @@ if(galleryEl){
   }
 }
 
-/* 사진 확대 보기 */
+/* ── 사진 확대 보기 ────────────────────────────────────────
+   두 곳에서 쓴다.
+     · 갤러리  : 여러 장을 좌우로 넘겨 본다
+     · 2페이지 대표 사진 : 한 장만 띄운다 (.single — 좌우 버튼을 감춘다)
+   여는 확대는 CSS(.lb-stage)가, 좌우로 넘기는 움직임은 아래 스크립트가 맡는다 */
 var lb      = document.getElementById('lightbox');
 var lbImg   = lb ? lb.querySelector('img') : null;
-var lbIndex = 0;
+var lbStage = lb ? lb.querySelector('.lb-stage') : null;
+var lbIndex  = 0;
+var lbSingle = false;   /* 한 장만 띄운 상태인가 */
+var lbBusy   = false;   /* 넘기는 중 — 끝나기 전에 또 넘기지 않도록 */
 
-function lbOpen(i){
-  lbIndex = (i + shots.length) % shots.length;
-  var thumb = galleryEl.children[lbIndex].querySelector('img');
-  /* 사진이 아직 없는 칸이면 플레이스홀더를 그대로 보여준다 */
-  lbImg.src = thumb.src;
+var LB_OUT = 150, LB_IN = 260;   /* 밀려나는 시간 / 들어오는 시간 (ms) */
+
+function lbSrcAt(i){
+  /* 사진이 아직 없는 칸이면 썸네일이 들고 있는 플레이스홀더를 그대로 보여준다 */
+  return galleryEl.children[i].querySelector('img').src;
+}
+function lbClearMotion(){
+  lbImg.style.transition = 'none';
+  lbImg.style.transform  = '';
+  lbImg.style.opacity    = '';
+}
+function lbShow(){
   lb.classList.add('open');
   document.body.style.overflow = 'hidden';
+}
+
+/* 갤러리에서 열기 */
+function lbOpen(i){
+  lbIndex  = (i + shots.length) % shots.length;
+  lbSingle = false;
+  lb.classList.remove('single');
+  lbClearMotion();
+  lbImg.src = lbSrcAt(lbIndex);
+  lbShow();
+}
+/* 한 장만 열기 (2페이지 대표 사진) */
+function lbOpenOne(src){
+  lbSingle = true;
+  lb.classList.add('single');
+  lbClearMotion();
+  lbImg.src = src;
+  lbShow();
 }
 function lbClose(){
   lb.classList.remove('open');
   document.body.style.overflow = '';
+}
+
+/* 좌우로 넘기기 : 보던 사진을 진행 방향으로 밀어내고, 새 사진이 반대쪽에서 들어온다.
+   dir = +1 다음 사진, -1 이전 사진 */
+function lbGo(dir){
+  if(lbSingle || lbBusy || shots.length < 2) return;
+  var next = function(){
+    lbIndex = (lbIndex + dir + shots.length) % shots.length;
+    lbImg.src = lbSrcAt(lbIndex);
+  };
+  if(reduceMotion){ next(); return; }
+
+  lbBusy = true;
+  var OFF = 40 * dir;
+  lbImg.style.transition = 'transform ' + LB_OUT + 'ms ease-in, opacity ' + LB_OUT + 'ms ease-in';
+  lbImg.style.transform  = 'translateX(' + (-OFF) + 'px)';
+  lbImg.style.opacity    = '0';
+
+  setTimeout(function(){
+    next();
+    /* 반대쪽 바깥에 세워두고 */
+    lbImg.style.transition = 'none';
+    lbImg.style.transform  = 'translateX(' + OFF + 'px)';
+    void lbImg.offsetWidth;      /* 이 값이 시작점으로 잡히도록 강제로 다시 계산시킨다 */
+    /* 제자리로 들여보낸다 */
+    lbImg.style.transition = 'transform ' + LB_IN + 'ms cubic-bezier(.2,.7,.3,1), opacity ' + LB_IN + 'ms ease-out';
+    lbImg.style.transform  = 'translateX(0)';
+    lbImg.style.opacity    = '1';
+    setTimeout(function(){ lbBusy = false; }, LB_IN);
+  }, LB_OUT);
+}
+
+if(lb){
+  lb.querySelector('.lb-close').addEventListener('click', lbClose);
+  lb.querySelector('.lb-prev').addEventListener('click', function(){ lbGo(-1); });
+  lb.querySelector('.lb-next').addEventListener('click', function(){ lbGo(1); });
+  /* 사진 바깥(어두운 바탕)을 누르면 닫는다 */
+  lb.addEventListener('click', function(e){ if(e.target === lb || e.target === lbStage) lbClose(); });
+  document.addEventListener('keydown', function(e){
+    if(!lb.classList.contains('open')) return;
+    if(e.key === 'Escape')     lbClose();
+    if(e.key === 'ArrowLeft')  lbGo(-1);
+    if(e.key === 'ArrowRight') lbGo(1);
+  });
+
+  /* 손가락으로 쓸어 넘기기 : 끄는 동안 사진이 따라오고, 충분히 끌면 넘어간다 */
+  var swX = 0, swY = 0, swOn = false;
+  lb.addEventListener('touchstart', function(e){
+    if(lbSingle || lbBusy || e.touches.length !== 1) return;
+    swX = e.touches[0].clientX; swY = e.touches[0].clientY; swOn = true;
+  }, {passive:true});
+  lb.addEventListener('touchmove', function(e){
+    if(!swOn) return;
+    var dx = e.touches[0].clientX - swX;
+    var dy = e.touches[0].clientY - swY;
+    /* 세로로 긋는 중이면 넘기지 않는다 */
+    if(Math.abs(dy) > Math.abs(dx)){ swOn = false; return; }
+    if(reduceMotion) return;
+    lbImg.style.transition = 'none';
+    lbImg.style.transform  = 'translateX(' + (dx * .5) + 'px)';   /* 절반만 따라오게 해 저항감을 준다 */
+    lbImg.style.opacity    = String(Math.max(.45, 1 - Math.abs(dx) / 420));
+  }, {passive:true});
+  lb.addEventListener('touchend', function(e){
+    if(!swOn) return;
+    swOn = false;
+    var dx = e.changedTouches[0].clientX - swX;
+    if(Math.abs(dx) > 50){ lbGo(dx < 0 ? 1 : -1); return; }
+    /* 덜 끌었으면 제자리로 되돌린다 */
+    lbImg.style.transition = 'transform .22s ease, opacity .22s ease';
+    lbImg.style.transform  = 'translateX(0)';
+    lbImg.style.opacity    = '1';
+  });
 }
 
 if(galleryEl && lb){
@@ -1530,15 +1678,13 @@ if(galleryEl && lb){
     var b = e.target.closest('button');
     if(b) lbOpen(parseInt(b.dataset.idx, 10));
   });
-  lb.querySelector('.lb-close').addEventListener('click', lbClose);
-  lb.querySelector('.lb-prev').addEventListener('click', function(){ lbOpen(lbIndex - 1); });
-  lb.querySelector('.lb-next').addEventListener('click', function(){ lbOpen(lbIndex + 1); });
-  lb.addEventListener('click', function(e){ if(e.target === lb) lbClose(); });
-  document.addEventListener('keydown', function(e){
-    if(!lb.classList.contains('open')) return;
-    if(e.key === 'Escape')     lbClose();
-    if(e.key === 'ArrowLeft')  lbOpen(lbIndex - 1);
-    if(e.key === 'ArrowRight') lbOpen(lbIndex + 1);
+}
+
+/* 2페이지 대표 사진도 같은 확대 보기로 띄운다 */
+var mainPhotoBtn = document.getElementById('mainPhotoBtn');
+if(mainPhotoBtn && lb){
+  mainPhotoBtn.addEventListener('click', function(){
+    lbOpenOne(mainPhotoBtn.querySelector('img').src);
   });
 }
 
@@ -1612,7 +1758,7 @@ if(galleryEl && lb){
           content:{
             title:'황지원 · 최정훈 결혼합니다',
             description:'2026년 11월 14일 토요일 오후 2시\n상주 마리앙스 웨딩컨벤션',
-            imageUrl: url + 'image/og-card-new2.png',    /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
+            imageUrl: url + 'image/og-card-new.png',    /* 카톡이 읽어야 하므로 반드시 절대 https 주소 */
             link:{ mobileWebUrl:url, webUrl:url }
           },
           buttons:[{ title:'모바일청첩장 바로가기', link:{ mobileWebUrl:url, webUrl:url } }]
