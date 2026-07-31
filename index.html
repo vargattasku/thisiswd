@@ -361,7 +361,7 @@ body{
 /* ── 1페이지 : gift ─────────────────────────────── */
 .gift-line{
   font-family:var(--Festigan);
-  font-size: 23px;
+  font-size: 21px;
   text-align:center;
   font-weight: 200;
 }
@@ -372,6 +372,7 @@ body{
   text-align:center;
   /* 아치가 깊어진 만큼 편지를 위로 당겨 뚜껑이 아치 안쪽에 들어오게 한다 */
   margin-bottom:-22px;
+  margin-top: 5px;
 }
 /* 이름을 ^ 산 모양으로 : 앞 이름은 / , 뒤 이름은 \ 방향 (1·2페이지 공통) */
 /* 이름은 위로 볼록한 완만한 아치를 따라 흐른다 (ref2.png 참고)
@@ -394,12 +395,12 @@ body{
 }
 .intro-names{
   font-size:clamp(15px,4.4vw,15px);
-  font-weight:400;
-  letter-spacing:.16em;
+  font-weight:500;
+  letter-spacing:.12em;
   text-indent:.16em;   /* letter-spacing 때문에 오른쪽으로 밀리는 만큼 보정 */
   line-height:1.4;
 }
-.intro-names .amp{ opacity:.4; margin:0 3px; letter-spacing: -1px; font-weight:300; }
+.intro-names .amp{ opacity:.4; margin:0 3px; letter-spacing: -0.5px; font-weight:300; }
 .intro-rule{
   display:block;
   width:26px; height:1px;
@@ -409,17 +410,13 @@ body{
 .intro-date{
   font-size:clamp(11.5px,3.3vw,13px);
   font-weight:400;
-  letter-spacing:.05em;
-  line-height:1.85;
-  opacity:.8;   /* !important 를 붙이면 .reveal 의 페이드인(0→1)까지 눌러버린다 */
+  line-height:1.65;
 }
-.intro-date .dot{ opacity:.35; margin:0 5px; }
+.intro-date .dot{ opacity:.35; margin:0 3px; }
 .intro-place{
-  margin-top:7px;
-  font-size:clamp(10.5px,3vw,13px);
+  margin-top: 2px;
+  font-size:clamp(11.5px,3.3vw,13px);
   font-weight:400;
-  letter-spacing:.03em;
-  opacity:.8;   /* 위와 같은 이유로 !important 를 쓰지 않는다 */
 }
 .intro-place .hall{ display:block; font-size:.92em; opacity:.85; font-weight: 400; }
 
@@ -546,7 +543,7 @@ body{
 .scroll-hint{
   position:absolute;
   left:0; right:0;
-  bottom:clamp(18px,3dvh,32px);
+  bottom:clamp(18px,1.3dvh,32px);
   display:flex;
   flex-direction:column;
   align-items:center;
@@ -1252,12 +1249,12 @@ body{
         </div>
         <div class="bank-row">
           <span class="who">아버지</span>
-          <span class="no" data-acct="농협 302-0000-0000-00">농협 302-0000-0000-00</span>
+          <span class="no" data-acct=""></span>
           <button class="copy" type="button">COPY</button>
         </div>
         <div class="bank-row">
           <span class="who">어머니</span>
-          <span class="no" data-acct="농협 302-0000-0000-00">농협 302-0000-0000-00</span>
+          <span class="no" data-acct=""></span>
           <button class="copy" type="button">COPY</button>
         </div>
       </div>
