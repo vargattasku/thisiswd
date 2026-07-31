@@ -595,6 +595,7 @@ body{
   }
   /* 상시 움직이는 것들도 멈춘다 */
   .js .letter-icon.in, .js .scroll-hint.in .sh-line,
+  .js .gal-more .gm-line,
   .js .cupid.in .cupid-img{
     animation:none !important; opacity:1;
   }
@@ -840,6 +841,70 @@ body{
   transition:opacity .3s;
 }
 .gallery button:hover img{ opacity:.78; }
+
+/* 접었을 때 : 3x2(GALLERY_PAGE 장) 는 온전히 보이고, 다음 줄은 위쪽 절반만 남기고
+   잘린다. 잘린 자리는 바탕색 그라데이션으로 흐려서 "아래에 더 있다"는 것만 알린다.
+   자를 높이(max-height)와 흐릴 높이(--peek)는 칸 크기에 따라 달라지므로 스크립트가 넣는다 */
+.gal-wrap{
+  position:relative;
+  width:100%;
+  overflow:hidden;   /* 펼치는 동안에도 넘치는 줄이 튀어나오지 않도록 계속 켜둔다 */
+}
+.gal-wrap.is-anim{ transition:max-height .5s cubic-bezier(.2,.7,.3,1); }
+.gal-wrap::after{
+  content:'';
+  position:absolute; left:0; right:0; bottom:0;
+  height:var(--peek,70px);
+  /* .page 의 바탕(--ivory #F7F3EA)으로 사라지게 한다 */
+  background:linear-gradient(to bottom,
+    rgba(247,243,234,0)    0%,
+    rgba(247,243,234,.32) 50%,
+    rgba(247,243,234,.88) 100%);
+  pointer-events:none;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.gal-wrap.is-peek::after{ opacity:1; }
+
+/* 더 보기 : 1페이지 .scroll-hint 와 같은 연출 — 라벨 아래로 실선이 흘러내린다 */
+.gal-more{
+  margin:clamp(12px,3.4vw,16px) auto 0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:9px;
+  padding:8px 16px;
+  background:none; border:0;
+  cursor:pointer;
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:8.3px;
+  font-weight:500;
+  letter-spacing:.34em;
+  text-indent:.34em;      /* 자간이 끝 글자 뒤에도 붙어 왼쪽으로 밀리는 것을 되돌린다 */
+  opacity:.72;
+  transition:opacity .25s;
+}
+.gal-more:hover{ opacity:1; }
+.gal-more .gm-line{
+  width:1px; height:30px;
+  background:linear-gradient(var(--ink-soft), rgba(45,60,205,0));
+  transform-origin:top;
+}
+.js .gal-more .gm-line{ animation:shDrop 2.4s ease-in-out .6s infinite; }
+/* 다 펴진 상태 : 라벨이 CLOSE 로 바뀌고, 실선이 라벨 위로 올라가 위쪽을 향해 걷힌다.
+   (접는 동작은 위로 향하므로 막대도 라벨 위에 있어야 방향이 읽힌다) */
+.gal-more.is-open{ flex-direction:column-reverse; }
+.gal-more.is-open .gm-line{
+  background:linear-gradient(rgba(45,60,205,0), var(--ink-soft));
+  transform-origin:bottom;
+}
+/* 사진이 GALLERY_PAGE 장 이하라 펼치고 접을 것이 없으면 아예 감춘다 */
+.gal-more.is-done{ display:none; }
+
+@media (prefers-reduced-motion: reduce){
+  .gal-wrap.is-anim{ transition:none; }
+}
 
 /* 사진 확대 보기 */
 .lightbox{
@@ -1257,7 +1322,17 @@ body{
     <span class="sec-rule"></span>
 
     <!-- 사진 : image/gallery/01.jpg ~ 10.jpg 를 넣으면 자동으로 채워진다 -->
-    <div class="gallery reveal d1" id="gallery"></div>
+    <!-- 접었을 때 다음 줄이 반쯤 비치도록 잘라내는 틀 -->
+    <div class="gal-wrap" id="galWrap">
+      <div class="gallery reveal d1" id="gallery"></div>
+    </div>
+
+    <!-- 접어둔 사진을 펼치는 화살표. 갤러리 밖에 두어야 한다 —
+         안에 넣으면 확대 보기가 쓰는 칸 번호(children 순서)가 밀린다 -->
+    <button class="gal-more" type="button" id="galMore" aria-label="사진 더 보기">
+      <span>MORE</span>
+      <span class="gm-line" aria-hidden="true"></span>
+    </button>
 
     <span class="sec-rule" style="margin-top:clamp(30px,8vw,42px)"></span>
 
@@ -1459,7 +1534,10 @@ document.querySelectorAll('.copy').forEach(function(b){
 
 /* ── 갤러리 : image/gallery/01.jpg ~ 10.jpg 를 자동으로 불러온다 ──
    사진 수를 바꾸려면 GALLERY_COUNT 만 고치면 된다 */
-var GALLERY_COUNT = 9;
+var GALLERY_COUNT = 12;
+/* 한 번에 보여줄 장수. 3칸씩 놓이므로 6 이면 3x2 다.
+   나머지는 접어두고 갤러리 아래 화살표를 누를 때마다 이만큼씩 펼친다 */
+var GALLERY_PAGE = 6;
 
 /* ── 카카오맵 ──────────────────────────────────────────────
    1) https://developers.kakao.com > 내 애플리케이션 > 앱 키 > "JavaScript 키" 복사
@@ -1531,6 +1609,7 @@ var galleryEl = document.getElementById('gallery');
 var shots = [];
 if(galleryEl){
   for(var i=1; i<=GALLERY_COUNT; i++){
+    /* 파일명은 두 자리 : 1~9 는 앞에 0 을 붙이고 10 부터는 그대로 (01,02 … 10,11,12) */
     var name = (i<10 ? '0' : '') + i;
     var src  = './image/gallery/' + name + '.jpg';
     shots.push(src);
@@ -1548,6 +1627,86 @@ if(galleryEl){
 
     b.appendChild(im);
     galleryEl.appendChild(b);
+  }
+}
+
+/* 갤러리 접기 / 펼치기
+   접었을 때 : GALLERY_PAGE 장은 온전히 보이고 다음 줄은 위쪽 절반만 비친다.
+               잘린 자리는 바탕색 그라데이션으로 흐려 "더 있다"는 것만 알린다.
+   펼쳤을 때 : 전부 보이고 화살표가 CLOSE 로 바뀐다.
+   확대 보기는 접힌 사진까지 전부 넘겨볼 수 있다 (shots 는 처음부터 9장을 들고 있다) */
+var galWrap  = document.getElementById('galWrap');
+var galMore  = document.getElementById('galMore');
+var galLabel = galMore ? galMore.querySelector('span') : null;
+var galOpen  = false;
+var GAL_COLS = 3;                 /* .gallery 의 grid-template-columns 와 같아야 한다 */
+var GAL_ANIM = 500;               /* 위 .gal-wrap.is-anim 의 전환 시간(ms) */
+var GAL_PEEK = .3;                /* 다음 줄을 얼마나 비출지 (줄 높이 대비) */
+
+/* 접었을 때의 높이 = 온전히 보일 줄 + 그 다음 줄의 윗부분 */
+function galClipH(){
+  var cell = galleryEl.children[0];
+  if(!cell) return 0;
+  var rowH = cell.getBoundingClientRect().height;
+  var gap  = parseFloat(getComputedStyle(galleryEl).rowGap) || 0;
+  var full = Math.ceil(GALLERY_PAGE / GAL_COLS);
+  return rowH * full + gap * full + rowH * GAL_PEEK;
+}
+/* 흐리게 덮을 높이 : 잘려서 비치는 부분에만 걸리게 한다.
+   이보다 크게 잡으면 그라데이션이 윗줄까지 덮어 비치는 줄이 거의 안 보인다 */
+function galPeekH(){
+  var cell = galleryEl.children[0];
+  return cell ? cell.getBoundingClientRect().height * GAL_PEEK : 42;
+}
+function galSyncMore(){
+  galMore.classList.toggle('is-open', galOpen);
+  galLabel.textContent = galOpen ? 'CLOSE' : 'MORE';
+  galMore.setAttribute('aria-label', galOpen ? '사진 접기' : '사진 더 보기');
+}
+function galCollapse(animate){
+  galWrap.style.setProperty('--peek', galPeekH() + 'px');
+  if(animate && !reduceMotion){
+    galWrap.classList.add('is-anim');
+    galWrap.style.maxHeight = galleryEl.scrollHeight + 'px';   /* 지금 높이에서 출발해야 전환이 걸린다 */
+    void galWrap.offsetHeight;                                 /* 이 값이 시작점으로 잡히도록 강제로 다시 계산시킨다 */
+  }else{
+    galWrap.classList.remove('is-anim');
+  }
+  galWrap.style.maxHeight = galClipH() + 'px';
+  galWrap.classList.add('is-peek');
+  galOpen = false;
+  galSyncMore();
+}
+function galExpand(){
+  galWrap.classList.toggle('is-anim', !reduceMotion);
+  galWrap.style.maxHeight = galleryEl.scrollHeight + 'px';
+  galWrap.classList.remove('is-peek');
+  galOpen = true;
+  galSyncMore();
+  /* 전환이 끝나면 높이 제한을 풀어, 창 크기가 바뀌어도 아래가 잘리지 않게 한다 */
+  window.setTimeout(function(){
+    if(galOpen) galWrap.style.maxHeight = 'none';
+  }, reduceMotion ? 0 : GAL_ANIM + 20);
+}
+
+if(galleryEl && galWrap && galMore){
+  if(GALLERY_COUNT <= GALLERY_PAGE){
+    /* 접을 만큼 사진이 없으면 잘라내지도, 버튼을 보이지도 않는다 */
+    galMore.classList.add('is-done');
+  }else{
+    galCollapse(false);
+    galMore.addEventListener('click', function(){
+      if(galOpen) galCollapse(true); else galExpand();
+      /* 접으면 아래 내용이 끌려 올라오므로 버튼이 손 닿는 자리에 남도록 맞춘다 */
+      if(!galOpen) galMore.scrollIntoView({ block:'nearest', behavior: reduceMotion ? 'auto' : 'smooth' });
+    });
+    /* 가로폭이 바뀌면 칸 크기가 달라지므로 접힌 높이를 다시 잰다 */
+    var galRz;
+    window.addEventListener('resize', function(){
+      if(galOpen) return;
+      clearTimeout(galRz);
+      galRz = setTimeout(function(){ galCollapse(false); }, 150);
+    });
   }
 }
 
