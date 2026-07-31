@@ -7,17 +7,18 @@
      카카오톡·SNS 미리보기용 1200x630 카드 원본.
      내용을 고친 뒤 아래 명령으로 image/og-card.png 를 다시 만든다.
 
-     "C:\Program Files\Google\Chrome\Application\chrome.exe" ^
-       --headless=new --disable-gpu --hide-scrollbars ^
-       --force-device-scale-factor=2 --window-size=1200,630 ^
-       --virtual-time-budget=6000 ^
-       --screenshot="image\og-card.png" og-card.html
+       node og-shot.js
 
-     ※ --virtual-time-budget 은 반드시 넣는다. 한글(Noto Sans KR)은 구글 폰트에서
-       내려받고 사진도 불러와야 하는데, 이 옵션이 없으면 도착하기 전에 찍혀서
-       한글이 기본 고딕으로, 사진이 빈 칸으로 남은 카드가 만들어진다.
+     ※ 크롬을 --screenshot 인자로 직접 띄우는 방법은 쓰지 않는다. 이미 떠 있는
+       크롬과 프로필이 부딪혀 아무것도 만들지 않고 끝나는 일이 잦다.
+       og-shot.js 는 puppeteer 로 붙고, 글꼴(Noto Sans KR)과 사진이 다 도착한
+       뒤에 찍으므로 한글이 기본 고딕으로 남거나 사진이 빈 칸이 되지 않는다.
      ※ 카카오톡은 한 번 읽은 미리보기를 캐시한다. 이미지를 바꾼 뒤에는
        https://developers.kakao.com/tool/debugger/sharing 에서 캐시를 지워야 반영된다.
+
+     [레이아웃] 1200x630 은 가로로 긴 판이다. 예전처럼 가운데 한 줄로 쌓으면
+     좌우가 비어 허전해지므로, 왼쪽은 아치형 사진 / 오른쪽은 리본 프레임 안의
+     글자로 나눠 가로폭을 다 쓴다.
      ============================================================ -->
 
 <!-- 한글은 본문(index.html)과 같은 Noto Sans KR 을 쓴다 -->
@@ -43,86 +44,122 @@ body{
   /* index.html 의 --sans 와 같은 구성 : 영문 Jost, Jost 에 없는 한글은 Noto Sans KR 로 떨어진다 */
   font-family:'Jost','Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   font-weight:300;
+  display:flex;                 /* 좌 사진 / 우 글자 2단 */
+  align-items:center;
+}
+
+/* ── 왼쪽 : 아치형 사진 ──────────────────────────────────────
+   원본 wd.jpg 가 세로 사진이라 세로로 긴 아치가 잘림 없이 가장 잘 맞는다.
+   예전 타원(가로 400x267)은 세로 사진을 심하게 잘라내 인물이 작게 남았다 */
+.photo-col{
+  width:500px; height:100%;
+  flex-shrink:0;
+  position:relative;
+  display:flex; align-items:center; justify-content:center;
+}
+
+.photo{
+  position:relative;
+  width:384px; height:546px;
+  /* 위쪽만 둥근 아치(웨딩 아치) 모양 */
+  border-radius:50% 50% 14px 14px / 34% 34% 5px 5px;
+  overflow:hidden;
+  background:#F1ECE0;
+}
+.photo img{
+  width:100%; height:100%;
+  object-fit:cover;
+  object-position:center 54%;   /* 세로 원본에서 인물이 아치 가운데 오도록 */
+  display:block;
+  filter:grayscale(1) contrast(1.04);
+}
+
+/* 사진 뒤로 살짝 비켜 선 아치 윤곽선 : 사진이 그냥 붙여넣은 사각형처럼 보이지 않게 한다.
+   카톡이 카드를 폭 350px 안팎으로 줄이므로 1px 로 두면 사라진다 — 그래서 1.6px */
+.photo-col::before{
+  content:'';
+  position:absolute;
+  width:384px; height:546px;
+  border:1.6px solid rgba(45,60,205,.22);
+  border-radius:50% 50% 14px 14px / 34% 34% 5px 5px;
+  transform:translate(18px, 18px);
+}
+
+/* ── 오른쪽 : 리본 프레임 + 글자 ───────────────────────────── */
+.text-col{
+  flex:1; height:100%;
+  position:relative;
   display:flex;
   flex-direction:column;
   align-items:center;
   justify-content:center;
 }
 
-/* 코너 리본 : 청첩장 본문과 같은 도형.
-   다만 카톡 미리보기는 이 카드를 폭 350px 안팎으로 줄여서 보여주기 때문에
-   본문과 같은 굵기(1.35)로 두면 선이 0.5px 이하로 뭉개져 사라진다.
-   그래서 og 카드에서만 선을 굵히고 크기도 키운다(아래 stroke-width 는 svg 쪽에 지정).
-   위치도 가장자리에서 더 들여놨다 — 카톡이 이미지 테두리를 잘라내는 경우가 있어
-   모서리에 바짝 붙여두면 리본부터 잘려나간다 */
-.mark{ position:absolute; width:112px; height:112px; color:#2030d0; }
+/* 리본 프레임 : 본문 .ribbon-frame 과 같은 도형을 오른쪽 단 안쪽에 두른다.
+   카톡 축소를 견디도록 본문(1.35)보다 선을 굵히고(2.6) 크기도 키웠다.
+   가장자리에서 넉넉히 들여놓은 것은 카톡이 이미지 테두리를 잘라내는 일이 있어서다 */
+.frame{
+  position:absolute;
+  top:58px; bottom:58px; left:6px; right:54px;
+}
+.mark{ position:absolute; width:104px; height:104px; color:#2030d0; }
 .mark svg{ width:100%; height:100%; display:block; overflow:visible; }
-.mark.tl{ top:50px;    left:56px; }
-.mark.tr{ top:50px;    right:56px;  transform:scaleX(-1); }
-.mark.bl{ bottom:50px; left:56px;   transform:scaleY(-1); }
-.mark.br{ bottom:50px; right:56px;  transform:scale(-1,-1); }
+.mark.tl{ top:0;    left:0; }
+.mark.tr{ top:0;    right:0;  transform:scaleX(-1); }
+.mark.bl{ bottom:0; left:0;   transform:scaleY(-1); }
+.mark.br{ bottom:0; right:0;  transform:scale(-1,-1); }
 
-/* 자간은 index.html 과 같은 비율이 되도록 px 대신 em 으로 적는다.
-   (본문 gift-line 은 20px 에 -1px = -.05em) */
-.line{
-  font-family:'Festigan',cursive;
-  font-size:25px;
-  font-weight:200;
-  letter-spacing:-.05em;
-  margin-bottom:-20px;
+.inner{ position:relative; padding:0 62px 0 22px; text-align:center; }
+
+/* 본문 .sec-label 과 같은 결의 작은 머리글 */
+.label{
+  font-size:14px;
+  font-weight:300;
+  letter-spacing:.34em;
+  text-indent:.34em;      /* 자간이 끝 글자 뒤에도 붙어 왼쪽으로 밀리는 것을 되돌린다 */
+  opacity:.5;
+  margin-bottom:16px;
 }
 
 /* 이름 아치 : 본문 1페이지와 같은 곡선(M14 106 Q200 -10 386 106).
-   글자 크기(47)·자간(4)은 viewBox 400 기준 값이라 본문과 같게 두고,
-   svg 자체의 폭만 줄여서 카드 안에서 작게 보이게 한다 */
-.arc{ width:470px; height:auto; overflow:visible; display:block; margin-bottom: -20px; }
+   글자 크기(44)·자간(6)은 viewBox 400 기준 값이고, svg 폭으로 실제 크기를 맞춘다 */
+.arc{ width:440px; height:auto; overflow:visible; display:block; margin:0 auto -14px; }
 .arc text{
   fill:currentColor;
   font-family:'Brittany Signature',cursive;
-  font-size:40px;
+  font-size:44px;
   font-weight:600;      /* 본문 .gift-names 와 같은 굵기 */
-  letter-spacing:8px;
+  letter-spacing:6px;
 }
 
-/* 타원 사진 : 본문 2페이지 .photo 와 같은 비율·보정 */
-.photo{
-  /* 아치 svg 는 viewBox(400x118) 아래쪽이 비어 있어 그대로 두면 이름과 사진이 벌어진다.
-     그 빈 높이만큼 음수 마진으로 당겨 본문 2페이지와 비슷한 간격을 만든다 */
-  margin-top:-12px;
-  width:400px;
-  aspect-ratio:1.5/1;
-  border-radius:50%;
-  overflow:hidden;
-  background:#F1ECE0;
-  flex-shrink:0;        /* 세로 630px 안에서 눌려 찌그러지지 않도록 */
-}
-.photo img{
-  width:100%; height:120%;
-  object-fit:cover;
-  object-position:center 80%;   /* 세로 원본에서 인물이 가운데 오도록 */
-  display:block;
-  filter:grayscale(1) contrast(1.04);
+/* 자간은 index.html 과 같은 비율이 되도록 px 대신 em 으로 적는다 */
+.line{
+  font-family:'Festigan',cursive;
+  font-size:27px;
+  font-weight:200;
+  letter-spacing:-.05em;
+  opacity:.82;
 }
 
-.rule{ width:44px; height:1px; background:rgba(45,60,205,.28); margin:24px 0 20px; }
+.rule{ display:block; width:52px; height:1.4px; background:rgba(45,60,205,.3); margin:30px auto 26px; }
 
-/* 날짜·장소는 본문 .intro-date / .intro-place 와 같은 서체·자간·농도 */
+/* 날짜·장소는 본문 .intro-date / .intro-place 와 같은 서체·자간·농도.
+   카톡 미리보기에서는 이 카드가 1/3 크기로 줄어 보이므로 본문 비율보다 키웠다 */
 .date{
   font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  font-size:21px;
+  font-size:25px;
   font-weight:400;
-  letter-spacing:.05em;
-  line-height:1.85;
-  opacity:.6;
+  letter-spacing:.02em;
+  opacity:.72;
 }
-.date .dot{ opacity:.35; margin:0 .42em; }   /* 본문의 12px 기준 5px 를 비율로 옮긴 값 */
+.date .dot{ opacity:.4; margin:0 .42em; }
 .place{
-  margin-top:14px;
+  margin-top:13px;
   font-family:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
-  font-size:18px;
-  font-weight:400;
-  letter-spacing:.03em;
-  opacity:.6;
+  font-size:19px;
+  font-weight:300;
+  letter-spacing:.02em;
+  opacity:.55;
 }
 </style>
 </head>
@@ -141,27 +178,36 @@ body{
   </defs>
 </svg>
 
-<span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
-<span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
-<span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
-<span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+<!-- 왼쪽 : 본문 2페이지와 같은 image/wd-web.jpg -->
+<div class="photo-col">
+  <figure class="photo"><img src="./image/wd-web.jpg" alt=""></figure>
+</div>
 
-<p class="line">Here begins forever</p>
+<!-- 오른쪽 -->
+<div class="text-col">
+  <div class="frame">
+    <span class="mark tl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark tr"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark bl"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+    <span class="mark br"><svg viewBox="0 0 74 74"><use href="#ribbon-corner"/></svg></span>
+  </div>
 
-<svg class="arc" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
-  <defs><path id="arcOg" d="M14 106 Q200 -10 386 106" fill="none"/></defs>
-  <text text-anchor="middle"><textPath href="#arcOg" startOffset="52%">jiwon<tspan dx="-2.5">&amp;</tspan><tspan dx="-2.5">jeonghun</tspan></textPath></text>
-</svg>
+  <div class="inner">
+    <p class="label">SAVE THE DATE</p>
 
-<!-- 타원 사진 : 본문 2페이지와 같은 image/wd-web.jpg -->
-<figure class="photo">
-  <img src="./image/wd-web.jpg" alt="">
-</figure>
+    <svg class="arc" viewBox="0 0 400 118" role="img" aria-label="jiwon &amp; jeonghun">
+      <defs><path id="arcOg" d="M14 106 Q200 -10 386 106" fill="none"/></defs>
+      <text text-anchor="middle"><textPath href="#arcOg" startOffset="52%">jiwon<tspan dx="-2.5">&amp;</tspan><tspan dx="-2.5">jeonghun</tspan></textPath></text>
+    </svg>
 
-<span class="rule"></span>
+    <p class="line">Here begins forever</p>
 
-<p class="date">2026년 11월 14일 토요일<span class="dot">·</span>오후 2시</p>
-<p class="place">상주 마리앙스 웨딩컨벤션</p>
+    <span class="rule"></span>
+
+    <p class="date">2026년 11월 14일 토요일<span class="dot">·</span>오후 2시</p>
+    <p class="place">상주 마리앙스 웨딩컨벤션</p>
+  </div>
+</div>
 
 </body>
 </html>
