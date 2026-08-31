@@ -1504,41 +1504,72 @@ document.querySelectorAll('.copy').forEach(function(b){
   var cd = document.getElementById('countdown');
   if(!cd) return;
 
-  var target = new Date(cd.dataset.target).getTime();
+  var targetDate = new Date(cd.dataset.target);
+
   var out = {
     d: cd.querySelector('[data-cd="d"]'),
     h: cd.querySelector('[data-cd="h"]'),
     m: cd.querySelector('[data-cd="m"]'),
-    s: cd.querySelector('[data-cd="s"]'),
-    dtext: cd.querySelector('[data-cd="dtext"]')   /* "…까지 nn일 남았습니다" 의 숫자 */
+    s: cd.querySelector('[data-cd="s"]')
   };
+
   var label = cd.querySelector('.cd-label');
   var krLine = cd.querySelector('.cd-kr');
+  var timer;
 
-  function pad(n){ return (n < 10 ? '0' : '') + n; }
+  function pad(n){
+    return (n < 10 ? '0' : '') + n;
+  }
 
   function tick(){
-    var diff = target - Date.now();
+    var now = new Date();
 
-    if(diff <= 0){
+    var today = new Date(
+      now.getFullYear(),
+      now.getMonth(),
+      now.getDate()
+    );
+
+    var weddingDay = new Date(
+      targetDate.getFullYear(),
+      targetDate.getMonth(),
+      targetDate.getDate()
+    );
+
+    var dayDiff = weddingDay.getTime() - today.getTime();
+
+    // 예식 당일
+    if(dayDiff === 0){
       cd.classList.add('done');
-      label.textContent = 'THE DAY IS HERE';
-      krLine.textContent = '와주셔서 감사합니다';
+      label.textContent = 'TODAY IS THE DAY';
+      krLine.textContent = '오늘은 예식일 당일입니다.';
       clearInterval(timer);
       return;
     }
 
+    // 예식 종료 후
+    if(dayDiff < 0){
+      cd.classList.add('done');
+      label.textContent = 'THANK YOU';
+      krLine.textContent = '와주셔서 감사합니다.';
+      clearInterval(timer);
+      return;
+    }
+
+    var diff = targetDate.getTime() - now.getTime();
     var secs = Math.floor(diff / 1000);
     var days = Math.floor(secs / 86400);
+
     out.d.textContent = days;
     out.h.textContent = pad(Math.floor((secs % 86400) / 3600));
     out.m.textContent = pad(Math.floor((secs % 3600) / 60));
     out.s.textContent = pad(secs % 60);
-    out.dtext.textContent = days;
+
+    krLine.textContent = '예식일까지 ' + days + '일 남았습니다.';
   }
 
   tick();
-  var timer = setInterval(tick, 1000);
+  timer = setInterval(tick, 1000);
 })();
 
 /* ── 갤러리 : image/gallery/01.jpg ~ 10.jpg 를 자동으로 불러온다 ──
