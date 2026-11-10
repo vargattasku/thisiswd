@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>mockup-envelope</title>
+<!-- ============================================================
+     2단 반접지 — 반투명(유산지) 봉투 연출 (참고용, 인쇄물 아님)
+     mok.png 와 같은 구성 : 밝은 바닥에 봉투 두 장을 비스듬히 놓고,
+     위쪽 봉투에서 내지가 꺼내진 상태. 아래 봉투에는 리본을 묶어 둔다.
+
+     ※ mok.png 는 실제 촬영물이다. 이 파일은 CSS 로 그린 근사치이므로
+       종이 결·조명 같은 사진 특유의 질감은 나오지 않는다.
+
+     비쳐 보이는 효과는 backdrop-filter 를 쓰지 않는다 — 헤드리스에서
+     GPU 상황에 따라 흐림이 통째로 사라져 결과가 들쭉날쭉하다. 대신 비칠 내용을
+     봉투 안에 한 겹 더 깔고 blur 를 먹여 어디서 돌려도 같게 나오도록 했다.
+
+     소스 : jpg/front.jpg  표지 165x80mm  (도련 포함 171x86)
+            jpg/inside.jpg 내지 165x148mm (도련 포함 171x154)
+
+       cd print
+       node shot.js mockup-envelope
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  /* 카드 폭 165mm 가 620px 이 되도록 잡았다 */
+  --mm: 3.7576px;
+  --w-card:   calc(165 * var(--mm));
+  --h-cover:  calc(80  * var(--mm));
+  --h-inside: calc(148 * var(--mm));
+
+  /* 봉투는 접힌 카드(165x93)가 들어가는 크기 — 사방으로 조금 크다 */
+  --w-env: calc(172 * var(--mm));
+  --h-env: calc(100 * var(--mm));
+}
+
+body{
+  width:1040px; height:1220px;
+  position:relative;
+  overflow:hidden;
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+  /* 밝은 탁자. 왼쪽 위에서 빛이 든다 */
+  background:
+    radial-gradient(130% 100% at 18% -8%, #ffffff 0%, #f6f5f3 46%, #e9e8e5 100%);
+}
+
+/* ── 장면 ──
+   구성 요소를 기울지 않은 좌표로 배치한 뒤, 장면을 통째로 한 번만 기울인다.
+   요소마다 각도를 주면 서로 어긋나서 맞추기가 어렵다 */
+.scene{
+  position:absolute;
+  left:50%; top:50%;
+  width:706px; height:976px;
+  margin-left:-353px; margin-top:-488px;
+  /* scale : 사방에 바닥이 보이도록 조금 줄인다 (mok.png 처럼 여백을 둔다) */
+  transform:rotate(-19deg) scale(.88);
+}
+
+/* ── 카드면 ──
+   도련을 잘라 재단 상태로 보여준다 : 재단 크기가 요소에 꽉 차도록 확대 */
+.face{
+  position:absolute;
+  width:var(--w-card);
+  background-repeat:no-repeat;
+  background-position:center;
+}
+.inside-face{
+  height:var(--h-inside);
+  background-image:url('jpg/inside.jpg');
+  background-size:calc(171 * var(--mm)) calc(154 * var(--mm));
+}
+.cover-face{
+  height:var(--h-cover);
+  background-image:url('jpg/front.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+
+/* 꺼내진 내지 — 봉투 위로 올라온 부분에만 그림자가 진다 */
+.card-out{
+  left:120px; top:0;
+  box-shadow:0 12px 26px rgba(0,0,0,.13), 0 2px 5px rgba(0,0,0,.08);
+}
+
+/* ── 봉투 ── */
+.env{
+  position:absolute;
+  width:var(--w-env); height:var(--h-env);
+  border-radius:3px;
+  /* 유산지 한 장의 두께감 : 옅은 테두리 + 바닥 그림자 */
+  box-shadow:
+    0 1px 0 rgba(255,255,255,.9) inset,
+    0 0 0 1px rgba(120,120,115,.14),
+    0 14px 30px rgba(0,0,0,.13),
+    0 3px 7px rgba(0,0,0,.07);
+}
+/* 유산지 본체 — 흰 종이. 뒤에 깔린 실제 카드가 그대로 보이면 흐린 사본과 겹쳐
+   이중상이 되므로, 거의 불투명하게 덮고 비침은 아래 .through 로만 만든다 */
+.vellum{
+  position:absolute; inset:0;
+  border-radius:3px;
+  background:
+    linear-gradient(158deg, rgba(255,255,255,.96) 0%, rgba(253,253,252,.93) 52%, rgba(246,245,242,.95) 100%);
+}
+/* 봉투를 통해 비쳐 보이는 내용. 유산지 위에 얹어야 "속이 비친다"로 읽힌다.
+   overflow 로 봉투 밖은 잘라낸다 */
+.through{
+  position:absolute; inset:0;
+  overflow:hidden;
+  border-radius:3px;
+  /* 유산지가 거의 불투명하므로 비침은 이 층이 전부 만든다.
+     연한 잉크색 글자가 흰 바탕에 씻겨 안 읽히지 않도록 진하게 남긴다 */
+  filter:blur(2.6px);
+  opacity:.78;
+}
+/* 봉투 입구(접힌 덮개) — 아래쪽에 겹쳐진 한 겹 */
+.flap{
+  position:absolute; left:0; right:0; bottom:0;
+  height:calc(42 * var(--mm));
+  border-radius:0 0 3px 3px;
+  background:linear-gradient(180deg, rgba(255,255,255,.30), rgba(255,255,255,.62));
+  box-shadow:0 -1px 0 rgba(120,120,115,.13);
+}
+/* 잠금 단추 — 자개 느낌의 작은 원 */
+.pearl{
+  position:absolute;
+  left:50%; top:calc(42 * var(--mm));
+  width:58px; height:44px;
+  margin-left:-29px; margin-top:-22px;
+  border-radius:50%;
+  background:
+    radial-gradient(60% 60% at 36% 30%, #ffffff 0%, #f4f3f0 42%, #e4e2dd 78%, #d8d6d0 100%);
+  box-shadow:0 3px 7px rgba(0,0,0,.16), 0 0 0 1px rgba(120,120,115,.12);
+}
+/* 단추의 빗살 무늬 */
+.pearl::after{
+  content:''; position:absolute; inset:5px 7px;
+  border-radius:50%;
+  background:repeating-linear-gradient(92deg, rgba(150,148,142,.20) 0 1px, transparent 1px 5px);
+}
+
+.env-a{ left:60px;  top:340px; }
+.env-b{ left:0;     top:600px; }
+
+/* ── 리본 ── 아래 봉투를 가로질러 묶은 새틴 끈.
+   선(stroke)으로 그리면 둥근 끈이 되어 빨대처럼 보인다 — 납작한 새틴이라
+   면(fill)으로 그려야 한다 */
+.ribbon{
+  position:absolute;
+  left:0; top:560px;
+  width:320px; height:450px;
+  overflow:visible;
+  /* 흰 봉투 위의 흰 끈이므로 그림자가 없으면 형태가 사라진다 */
+  filter:drop-shadow(0 6px 11px rgba(0,0,0,.22)) drop-shadow(0 1px 2px rgba(0,0,0,.14));
+}
+.ribbon .satin{ fill:#fbfbfa; stroke:rgba(168,166,160,.62); stroke-width:1; }
+/* 고리 안쪽으로 접히는 면은 살짝 그늘진다 */
+.ribbon .satin-in{ fill:#eceae6; stroke:rgba(168,166,160,.55); stroke-width:1; }
+</style>
+</head>
+<body>
+
+<div class="scene">
+
+  <!-- 1) 꺼내진 내지 : 위쪽 봉투 뒤에서 올라온다 -->
+  <div class="face inside-face card-out"></div>
+
+  <!-- 2) 위쪽 봉투 : 내지의 아래쪽을 덮는다 -->
+  <div class="env env-a">
+    <!-- 봉투 안쪽에서 비치는 내지. 장면 좌표 차이(120-60, 0-340)만큼 밀어 맞춘다 -->
+    <div class="through">
+      <div class="face inside-face" style="left:60px; top:-340px;"></div>
+    </div>
+    <div class="vellum"></div>
+    <div class="flap"></div>
+    <div class="pearl"></div>
+  </div>
+
+  <!-- 3) 아래 봉투 (표지가 들어 있다) -->
+  <div class="env env-b">
+    <!-- 비치는 표지. 봉투 안에서의 위치 -->
+    <div class="through">
+      <div class="face cover-face" style="left:14px; top:26px;"></div>
+    </div>
+    <div class="vellum"></div>
+    <div class="flap"></div>
+  </div>
+
+  <!-- 4) 리본 : 아래 봉투를 가로질러 지나간다 -->
+  <svg class="ribbon" viewBox="0 0 320 450" aria-hidden="true">
+    <!-- 봉투를 감는 납작한 띠 -->
+    <path class="satin" d="M139 0 h22 v450 h-22 z"/>
+    <!-- 늘어진 두 갈래 (끝을 비스듬히 잘라 새틴처럼) -->
+    <path class="satin" d="M146 252 C136 292, 122 322, 100 346 L118 356 C138 330, 152 298, 158 258 z"/>
+    <path class="satin" d="M158 252 C168 292, 176 324, 188 352 L170 358 C156 328, 146 294, 144 258 z"/>
+    <!-- 고리 두 개 -->
+    <path class="satin-in" d="M150 240 C122 224, 74 218, 62 236 C52 251, 100 265, 150 253 z"/>
+    <path class="satin"    d="M150 240 C178 224, 226 218, 238 236 C248 251, 200 265, 150 253 z"/>
+    <!-- 매듭 -->
+    <ellipse class="satin" cx="150" cy="247" rx="12" ry="9.5"/>
+  </svg>
+
+</div>
+
+</body>
+</html>

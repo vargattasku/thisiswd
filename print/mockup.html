@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>mockup</title>
+<!-- ============================================================
+     2단 반접지 — 출력물 목업 (참고용, 인쇄물 아님)
+     ref3.png 과 같은 구성 : 어두운 천 위에 펼친 내지 1장 + 접은 카드 2장
+
+     소스 : jpg/front.jpg  표지  165x80mm  (도련 포함 171x86)
+            jpg/inside.jpg 내지  165x148mm (도련 포함 171x154)
+            jpg/back.jpg   뒷면  165x80mm  (도련 포함 171x86)
+
+     내용을 고친 뒤 아래 명령으로 mockup.jpg 를 다시 만든다.
+     캔버스는 1600x1000 으로 고정 — shot.js 가 이 크기를 그대로 쓴다.
+
+       cd print
+       node shot.js
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  /* 1mm 를 몇 px 로 그릴지. 표지 폭 165mm 가 624px 이 되도록 잡았다 */
+  --mm: 3.7818px;
+
+  --w-card:    calc(165 * var(--mm));   /* 재단 폭 (세 장 공통) */
+  --h-cover:   calc(80  * var(--mm));   /* 표지·뒷면 재단 높이 */
+  --h-inside:  calc(148 * var(--mm));   /* 내지 재단 높이 */
+  --h-folded:  calc(93  * var(--mm));   /* 접었을 때 높이 = 표지 80 + 아래로 드러나는 13 */
+  --reveal:    calc(13  * var(--mm));   /* 표지 아래로 드러나는 내지 폭 */
+  --bleed:     calc(3   * var(--mm));   /* 사방 도련 */
+}
+
+body{
+  width:1600px; height:1000px;
+  position:relative;
+  overflow:hidden;
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+  background:#0b0b0d;
+}
+
+/* ── 배경 : 어두운 천 ──
+   외부 이미지를 쓸 수 없으므로 결이 다른 그러데이션을 겹쳐 짜임새를 만든다 */
+.cloth{
+  position:absolute; inset:0;
+  background:
+    /* 위쪽에서 들어오는 빛 */
+    radial-gradient(120% 90% at 30% -10%, rgba(255,255,255,.09), transparent 58%),
+    /* 아래 구석을 눌러 주는 비네트 */
+    radial-gradient(110% 105% at 50% 122%, rgba(0,0,0,.62), transparent 62%),
+    /* 씨·날 두 방향의 결. 값이 작으면 렌더에서 아예 사라지므로 이 정도는 필요하다 */
+    repeating-linear-gradient(  24deg, rgba(255,255,255,.045) 0 1px, transparent 1px 3px),
+    repeating-linear-gradient(-66deg, rgba(255,255,255,.028) 0 1px, transparent 1px 4px),
+    repeating-linear-gradient(  24deg, rgba(0,0,0,.30)        0 1px, transparent 1px 6px),
+    linear-gradient(155deg, #15151a 0%, #101014 50%, #0a0a0c 100%);
+}
+
+/* ── 종이 공통 ── */
+.piece{
+  position:absolute;
+  width:var(--w-card);
+  transform-style:preserve-3d;
+}
+/* 그림자는 face 의 box-shadow 로 준다.
+   filter 를 조상에 걸면 preserve-3d 가 강제로 평면화되어 내지의 접힘이 사라진다 */
+.face{
+  position:relative;
+  background-repeat:no-repeat;
+  background-position:center;
+  /* 얇은 밝은 테두리(종이 두께) + 바닥에 놓인 종이의 두 겹 그림자 */
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.13),
+    0 6px 10px rgba(0,0,0,.5),
+    0 26px 44px rgba(0,0,0,.5);
+}
+/* 왼쪽 위에서 빛이 오므로 오른쪽 아래가 살짝 어둡다 */
+.face::after{
+  content:''; position:absolute; inset:0;
+  background:linear-gradient(150deg, rgba(255,255,255,.07), transparent 42%, rgba(0,0,0,.16));
+  pointer-events:none;
+}
+
+/* 도련을 잘라 재단 상태로 보여준다 : 재단 폭·높이가 요소에 꽉 차도록 확대 */
+.inside-face{
+  height:var(--h-inside);
+  background-image:url('jpg/inside.jpg');
+  background-size:calc(171 * var(--mm)) calc(154 * var(--mm));
+}
+.cover-face{
+  height:var(--h-cover);
+  background-image:url('jpg/front.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+.back-face{
+  height:var(--h-cover);
+  background-image:url('jpg/back.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+
+/* ── 1) 펼친 내지 ──
+   완전히 평평하면 어디가 접는 자리인지 안 보이므로, 접는 선에서 두 쪽으로 갈라
+   서로 다른 각도로 세운다. 두 쪽은 접는 선을 회전축(transform-origin)으로 공유하므로
+   벌어지지 않는다.
+   접는 자리는 혼주 줄과 사진 사이의 빈 띠(위에서 62mm) — 글자를 가로지르면
+   접힌 자국이 아니라 인쇄 불량으로 보인다. 위치를 바꾸려면 --fold 만 고치면 된다 */
+.spread{
+  --fold: 62;                                  /* 위에서 접는 선까지 (mm) */
+  left:280px; top:30px;
+  perspective:1500px;                          /* 자식의 3D 가 살도록 속성으로 준다 */
+}
+.spread .fold{
+  transform-style:preserve-3d;
+  transform:rotateX(5deg) rotate(-2deg);       /* 종이 전체를 눕히는 각도 */
+}
+/* 위쪽은 살짝 일어서고 아래쪽은 살짝 눕는다 — 접는 선에 능선이 생긴다 */
+.spread .p-top{
+  height:calc(var(--fold) * var(--mm));
+  transform-origin:bottom center;
+  transform:rotateX(7deg);
+}
+.spread .p-bot{
+  height:calc((148 - var(--fold)) * var(--mm));
+  transform-origin:top center;
+  transform:rotateX(-4deg);
+}
+/* 위쪽은 빛을 더 받고, 아래쪽은 접힘 아래라 살짝 그늘진다 */
+.spread .p-top::after{ background:linear-gradient(150deg, rgba(255,255,255,.10), transparent 46%, rgba(0,0,0,.10)); }
+.spread .p-bot::after{ background:linear-gradient(150deg, rgba(0,0,0,.10), transparent 40%, rgba(0,0,0,.20)); }
+/* 도련 위쪽 3mm 를 걷어내고, 아래쪽 판은 접는 선부터 보이게 끌어올린다 */
+.spread .p-top{ background-position-y:calc(-3 * var(--mm)); }
+.spread .p-bot{ background-position-y:calc(-1 * (3 + var(--fold)) * var(--mm)); }
+/* 능선 : 접는 선 바로 위에 얇은 하이라이트 한 줄 */
+.spread .p-top{ border-bottom:1px solid rgba(255,255,255,.16); }
+
+/* ── 2·3) 접은 카드 ──
+   표지 아래로 내지의 맨 아랫줄(일시·장소)만 13mm 드러난다 */
+.folded{ height:var(--h-folded); }
+.folded .peek{
+  height:var(--reveal);
+  background-image:url('jpg/inside.jpg');
+  background-size:calc(171 * var(--mm)) calc(154 * var(--mm));
+  /* 재단면 아래끝(도련 3mm 위)이 요소 아래끝에 오도록 끌어올린다 */
+  background-position-x:center;
+  background-position-y:calc(-1 * (154 - 3 - 13) * var(--mm));
+}
+/* 접힌 카드는 표지(또는 뒷면)가 내지 위에 얹혀 있으므로 경계에 그림자를 한 줄 넣는다.
+   .face 의 큰 그림자는 그대로 두고 짧은 것 하나만 덧붙인다 */
+.folded .cover-face,
+.folded .back-face{
+  box-shadow:
+    inset 0 0 0 1px rgba(255,255,255,.13),
+    0 3px 6px rgba(0,0,0,.45),
+    0 6px 10px rgba(0,0,0,.5),
+    0 26px 44px rgba(0,0,0,.5);
+  z-index:1;
+}
+
+.folded-b{
+  left:440px; top:374px;
+  transform:perspective(1800px) rotateX(7deg) rotate(-16deg);
+}
+.folded-a{
+  left:232px; top:624px;
+  transform:perspective(1800px) rotateX(6deg) rotate(-6deg);
+}
+
+/* ── 오른쪽 표제 ── */
+.caption{
+  position:absolute;
+  left:1090px; top:404px;
+  width:360px;
+  text-align:center;
+  color:#fff;
+  font-size:27px;
+  font-weight:700;
+  letter-spacing:.02em;
+  white-space:nowrap;
+}
+.caption .star{ font-weight:400; opacity:.9; margin:0 .34em; font-size:.82em; vertical-align:.06em; }
+</style>
+</head>
+<body>
+
+<div class="cloth"></div>
+
+<!-- 1) 펼친 내지 — 접는 선에서 두 쪽으로 갈라 살짝 접힌 상태로 보여준다 -->
+<div class="piece spread">
+  <div class="fold">
+    <div class="face inside-face p-top"></div>
+    <div class="face inside-face p-bot"></div>
+  </div>
+</div>
+
+<!-- 2) 접은 카드 — 뒤쪽, 많이 기울여 놓은 것. 뒷면(달력)이 위로 오게 뒤집어 놓았다 -->
+<div class="piece folded folded-b">
+  <div class="face back-face"></div>
+  <div class="face peek"></div>
+</div>
+
+<!-- 3) 접은 카드 — 맨 앞 -->
+<div class="piece folded folded-a">
+  <div class="face cover-face"></div>
+  <div class="face peek"></div>
+</div>
+
+<p class="caption">
+  <span class="star">✳</span>2단 반접지형<span class="star">✳</span>
+</p>
+
+</body>
+</html>

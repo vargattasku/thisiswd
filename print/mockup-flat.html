@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>mockup-flat</title>
+<!-- ============================================================
+     2단 반접지 — 검정 배경 플랫 시트 (참고용, 인쇄물 아님)
+     mok2.png 와 같은 구성 : 표지와 내지를 검정 위에 위아래로 눕혀 놓는다.
+
+     소스 : jpg/front.jpg  표지 165x80mm  (도련 포함 171x86)
+            jpg/inside.jpg 내지 165x148mm (도련 포함 171x154)
+
+       cd print
+       node shot.js mockup-flat
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  /* 표지 폭 165mm 가 680px 이 되도록 잡았다 */
+  --mm: 4.1212px;
+  --w-card:   calc(165 * var(--mm));
+  --h-cover:  calc(80  * var(--mm));
+  --h-inside: calc(148 * var(--mm));
+}
+
+body{
+  width:1000px;
+  padding:92px 0 104px;
+  background:#000;
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  gap:62px;
+}
+
+/* 도련을 잘라 재단 상태로 보여준다 : 재단 크기가 요소에 꽉 차도록 확대 */
+.face{
+  width:var(--w-card);
+  background-repeat:no-repeat;
+  background-position:center;
+}
+.cover-face{
+  height:var(--h-cover);
+  background-image:url('jpg/front.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+.inside-face{
+  height:var(--h-inside);
+  background-image:url('jpg/inside.jpg');
+  background-size:calc(171 * var(--mm)) calc(154 * var(--mm));
+}
+
+/* 검정 배경에 아이보리 종이가 뜨도록 아주 옅은 테두리만 준다.
+   그림자를 넣으면 mok2 의 플랫한 느낌이 깨진다 */
+.face{ box-shadow:0 0 0 1px rgba(255,255,255,.08); }
+
+.caption{
+  color:rgba(255,255,255,.42);
+  font-size:12.5px;
+  font-weight:400;
+  letter-spacing:.26em;
+  text-indent:.26em;
+  margin-top:6px;
+}
+</style>
+</head>
+<body>
+
+<div class="face cover-face"></div>
+<div class="face inside-face"></div>
+<p class="caption">JIWON &amp; JEONGHUN · 2026.11.14</p>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<title>mockup-spec</title>
+<!-- ============================================================
+     2단 반접지 — 규격 안내 시트 (참고용, 인쇄물 아님)
+     mok3.png 와 같은 구성 : 앞면·내지·뒷면을 차례로 놓고 각 규격을 라벨로 붙인다.
+     내지 아래쪽에는 접었을 때 표지 밖으로 드러나는 부분(노출부)을 표시한다.
+
+     소스 : jpg/front.jpg  앞면 165x80mm  (도련 포함 171x86)
+            jpg/inside.jpg 내지 165x148mm (도련 포함 171x154)
+            jpg/back.jpg   뒷면 165x80mm  (도련 포함 171x86)
+
+       cd print
+       node shot.js mockup-spec
+     ============================================================ -->
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+*{ margin:0; padding:0; box-sizing:border-box; }
+
+:root{
+  /* 카드 폭 165mm 가 620px 이 되도록 잡았다 */
+  --mm: 3.7576px;
+  --w-card:   calc(165 * var(--mm));
+  --h-cover:  calc(80  * var(--mm));
+  --h-inside: calc(148 * var(--mm));
+  --reveal:   calc(13  * var(--mm));   /* 접었을 때 표지 아래로 드러나는 폭 */
+}
+
+body{
+  width:1000px;
+  padding:52px 0 62px;
+  background:#000;
+  color:#fff;
+  font-family:'Noto Sans KR','Malgun Gothic',sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+/* ── 표제 ── */
+.title{
+  font-size:25px;
+  font-weight:700;
+  letter-spacing:.02em;
+  margin-bottom:34px;
+  white-space:nowrap;
+}
+.title .star{ font-weight:400; opacity:.9; margin:0 .38em; font-size:.8em; vertical-align:.06em; }
+
+/* ── 카드면 ──
+   도련을 잘라 재단 상태로 보여준다 : 재단 크기가 요소에 꽉 차도록 확대 */
+.face{
+  position:relative;
+  width:var(--w-card);
+  background-repeat:no-repeat;
+  background-position:center;
+  box-shadow:0 0 0 1px rgba(255,255,255,.08);
+}
+.cover-face{
+  height:var(--h-cover);
+  background-image:url('jpg/front.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+.inside-face{
+  height:var(--h-inside);
+  background-image:url('jpg/inside.jpg');
+  background-size:calc(171 * var(--mm)) calc(154 * var(--mm));
+}
+.back-face{
+  height:var(--h-cover);
+  background-image:url('jpg/back.jpg');
+  background-size:calc(171 * var(--mm)) calc(86 * var(--mm));
+}
+
+/* ── 규격 라벨 ── */
+.label{
+  width:var(--w-card);
+  padding:19px 0;
+  text-align:center;
+  font-size:19px;
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.label .bar{
+  display:inline-block;
+  width:1px; height:15px;
+  background:rgba(255,255,255,.34);
+  margin:0 14px;
+  vertical-align:-2px;
+}
+.label .mm{ font-weight:400; letter-spacing:.03em; }
+
+/* ── 노출부 표시 ──
+   내지 오른쪽 바깥으로 괄호와 글자를 뺀다. 내지 안에 넣으면 인쇄 요소로 오해된다 */
+.callout{
+  position:absolute;
+  right:calc(-1 * (var(--reveal) + 96px));
+  bottom:0;
+  width:calc(var(--reveal) + 96px);
+  height:var(--reveal);
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding-left:9px;
+  white-space:nowrap;
+}
+.callout svg{ display:block; flex:none; }
+.callout span{
+  font-size:14.5px;
+  font-weight:500;
+  letter-spacing:.02em;
+}
+</style>
+</head>
+<body>
+
+<p class="title"><span class="star">✳</span>2단 반접지형<span class="star">✳</span></p>
+
+<div class="face cover-face"></div>
+<p class="label">앞면<span class="bar"></span><span class="mm">165 × 80 mm</span></p>
+
+<div class="face inside-face">
+  <!-- 접었을 때 표지 밖으로 드러나는 아래 13mm -->
+  <div class="callout">
+    <svg width="11" height="46" viewBox="0 0 11 46" fill="none" aria-hidden="true">
+      <path d="M1 1 C8 8, 8 38, 1 45" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/>
+    </svg>
+    <span>노출부</span>
+  </div>
+</div>
+<p class="label">내지<span class="bar"></span><span class="mm">165 × 148 mm</span></p>
+
+<div class="face back-face"></div>
+<p class="label">뒷면<span class="bar"></span><span class="mm">165 × 80 mm</span></p>
+
+</body>
+</html>

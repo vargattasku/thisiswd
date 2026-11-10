@@ -1,0 +1,187 @@
+%!Adobe-FontList 1.25
+%Locale:0x412
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:BrittanySignatureRegular
+FamilyName:Brittany Signature
+StyleName:Regular
+FullName:Brittany Signature
+MenuName:Brittany Signature
+StyleBits:0
+WritingScript:Roman
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\BrittanySignature.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:27536
+FileModTime:1686372142
+WeightClass:400
+WidthClass:5
+AngleClass:0
+NameArray:0,Mac,4,Brittany Signature
+NameArray:0,Win,1,Brittany Signature
+NameArray:0,Win,16,Brittany Signature
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:Type1
+FontName:FestiganRegular
+FamilyName:Festigan
+StyleName:Regular
+FullName:Festigan
+MenuName:Festigan
+StyleBits:0
+WritingScript:Roman
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\Festigan.otf
+DataFormat:sfntData
+UsesStandardEncoding:yes
+isCFF:yes
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:353956
+FileModTime:1708656630
+WeightClass:400
+WidthClass:5
+AngleClass:0
+NameArray:0,Mac,4,Festigan
+NameArray:0,Win,1,Festigan
+NameArray:0,Win,16,Festigan
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:Jost-Light
+FamilyName:Jost
+StyleName:Light
+FullName:Jost Light
+MenuName:Jost Light
+StyleBits:0
+WritingScript:Roman
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\Jost-Light.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:88500
+FileModTime:1644004850
+WeightClass:300
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Jost Light
+NameArray:0,Win,16,Jost
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:NotoSansKR-Black
+FamilyName:Noto Sans KR
+StyleName:Black
+FullName:Noto Sans KR Black
+MenuName:Noto Sans KR Black
+StyleBits:0
+FamilyNameNative:Noto Sans KR
+StyleNameNative:Black
+FullNameNative:Noto Sans KR Black
+WritingScript:Korean
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\NotoSansKR-Black.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:6188800
+FileModTime:1721957840
+WeightClass:900
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Noto Sans KR Black
+NameArray:0,Win,16,Noto Sans KR
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:NotoSansKR-Medium
+FamilyName:Noto Sans KR
+StyleName:Medium
+FullName:Noto Sans KR Medium
+MenuName:Noto Sans KR Medium
+StyleBits:0
+FamilyNameNative:Noto Sans KR
+StyleNameNative:Medium
+FullNameNative:Noto Sans KR Medium
+WritingScript:Korean
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\NotoSansKR-Medium.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:6190280
+FileModTime:1721957826
+WeightClass:500
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Noto Sans KR Medium
+NameArray:0,Win,16,Noto Sans KR
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:NotoSansKR-SemiBold
+FamilyName:Noto Sans KR
+StyleName:SemiBold
+FullName:Noto Sans KR SemiBold
+MenuName:Noto Sans KR SemiBold
+StyleBits:0
+FamilyNameNative:Noto Sans KR
+StyleNameNative:SemiBold
+FullNameNative:Noto Sans KR SemiBold
+WritingScript:Korean
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\NotoSansKR-SemiBold.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:6188924
+FileModTime:1721957833
+WeightClass:600
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Noto Sans KR SemiBold
+NameArray:0,Win,16,Noto Sans KR
+%EndFont
+
+%BeginFont
+Handler:DirectoryHandler
+FontType:TrueType
+FontName:NotoSansKR-Thin
+FamilyName:Noto Sans KR
+StyleName:Thin
+FullName:Noto Sans KR Thin
+MenuName:Noto Sans KR Thin
+StyleBits:0
+FamilyNameNative:Noto Sans KR
+StyleNameNative:Thin
+FullNameNative:Noto Sans KR Thin
+WritingScript:Korean
+OutlineFileName:C:\Users\dosoftlab\Desktop\황지원\Font\NotoSansKR-Thin.ttf
+DataFormat:sfntData
+hasSVG:no
+hasCOLR:no
+VariableFontType:NonVariableFont
+FileLength:6201276
+FileModTime:1721957836
+WeightClass:250
+WidthClass:5
+AngleClass:0
+NameArray:0,Win,1,Noto Sans KR Thin
+NameArray:0,Win,16,Noto Sans KR
+%EndFont
+
